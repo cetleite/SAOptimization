@@ -7,7 +7,6 @@ param n2 {i in A};				#noh 2
 param dist {i in A, j in A};	#custo de transporte de no 1 para no j
 
 #Variavel
-var x {i in A} binary;			#se facilidade instalada na cidade i
 var a {i in A, j in A} binary;	#se facilidade no nodo i atende cliente no nodo j
 
 #Funcao objetivo
@@ -16,8 +15,8 @@ minimize custoTotal:
 
 #Restricoes
 s.t. minimimo_instalacoes:				#se foram instaladas exatas 'medianas' facilidades
-	sum{i in A} (x[i]) = mediana[1];
+	sum{i in A} a[i, i] = mediana;
 
-s.t. clientes_atendidos{j in A}:		#se todos os clientes foram atendidos por exatamente uma facilidade
-	sum{i in A}a[i, j] = 1;
+s.t. clientes_atendidos{i in A}:		#se todos os clientes foram atendidos por exatamente uma facilidade
+	sum{j in A} a[i, j] = 1;
 end;
