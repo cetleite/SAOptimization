@@ -229,7 +229,10 @@ public class SAOptimization {
     
     public static int[][] solucao_inicial(int[][] matriz)
     {
-        //Ainda não implementado  
+        //Ainda não implementado
+        
+        
+        
         return matriz;
     }
     
