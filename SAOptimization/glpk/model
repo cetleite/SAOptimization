@@ -1,22 +1,23 @@
-set A;
+set A;							#conjunto de nodos
+set mediana;					#numero de facilidades que devem ser instaladas
 
 #Parametros
-param n1 {i in A};
-param n2 {i in A};
-param dist {i in A, j in A};
+param n1 {i in A};				#noh 1
+param n2 {i in A};				#noh 2
+param dist {i in A, j in A};	#custo de transporte de no 1 para no j
 
 #Variavel
-var x {i in A, j in A} integer, >= 0;	#numero de avioes i vendidos
-var b {i in A, j in A} binary;			#se nodo i esta tem ligacao com nodo j
+var x {i in A} binary;			#se facilidade instalada na cidade i
+var a {i in A, j in A} binary;	#se facilidade no nodo i atende cliente no nodo j
 
 #Funcao objetivo
 minimize custoTotal:
-	sum{i in A} (x[i] * lucro[i]) - sum{i in A} (b[i] * preco[i]);
+	sum{i in A} sum{j in A}( a[i, j] * dist[i, j]);
 
 #Restricoes
-s.t. limite_capac:
-	sum{i in A} (x[i] * capac[i]) <= 100;
+s.t. minimimo_instalacoes:				#se foram instaladas exatas 'medianas' facilidades
+	sum{i in A} (x[i]) = mediana[1];
 
-s.t. limite_deman{i in A}:
-	x[i] <= deman[i] * b[i];
-
+s.t. clientes_atendidos{j in A}:		#se todos os clientes foram atendidos por exatamente uma facilidade
+	sum{i in A}a[i, j] = 1;
+end;
