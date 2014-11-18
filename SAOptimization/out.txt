@@ -1,5 +1,5 @@
 data;
-
+set A := 1, 2, 3, 4, 5;
 param p := 3;
 param dist: 1 2 3 4 5:=
 1	9999 15 4 4 3 

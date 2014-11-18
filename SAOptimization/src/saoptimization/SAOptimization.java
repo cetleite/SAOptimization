@@ -81,7 +81,9 @@ public class SAOptimization {
             concat = concat + i + ", ";
             indices = indices + i + " ";
         }
+        
         concat = concat + i + ";";
+        bw.write(concat);
         indices = indices + i + ":=\n";
         
         bw.write("\n");
