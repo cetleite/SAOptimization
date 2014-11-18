@@ -1,17 +1,16 @@
 set A;
 
 #Parametros
-param preco {i in A};
-param lucro {i in A};
-param capac {i in A};
-param deman {i in A};
+param n1 {i in A};
+param n2 {i in A};
+param dist {i in A, j in A};
 
 #Variavel
-var x {i in A} integer, >= 0;	#numero de avioes i vendidos
-var b {i in A} binary;
+var x {i in A, j in A} integer, >= 0;	#numero de avioes i vendidos
+var b {i in A, j in A} binary;			#se nodo i esta tem ligacao com nodo j
 
 #Funcao objetivo
-maximize lucroTotal:
+minimize custoTotal:
 	sum{i in A} (x[i] * lucro[i]) - sum{i in A} (b[i] * preco[i]);
 
 #Restricoes
