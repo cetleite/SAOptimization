@@ -81,7 +81,9 @@ public class SAOptimization {
             concat = concat + i + ", ";
             indices = indices + i + " ";
         }
+        
         concat = concat + i + ";";
+        bw.write(concat);
         indices = indices + i + ":=\n";
         
         bw.write("\n");
@@ -303,9 +305,13 @@ public class SAOptimization {
          int i,j;
          
          for(i=0;i<dimension;i++)
-             for(j=0; j<dimension;j++)            
-                 matriz_entrada[i][j] = VALOR_INFINITO;
-         
+             for(j=0; j<dimension;j++)
+             {
+                 if(j==i)
+                    matriz_entrada[i][j] = 0;
+                 else
+                    matriz_entrada[i][j] = VALOR_INFINITO;
+             }         
          /*Enquanto não leu tudo do arquivo*/          
          while(reader.read() != -1)
          {
