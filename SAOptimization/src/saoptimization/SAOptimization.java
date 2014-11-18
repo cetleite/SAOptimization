@@ -6,13 +6,14 @@
 package saoptimization;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.Arrays;
 
 /**
  *
@@ -51,6 +52,8 @@ public class SAOptimization {
         
         /*Le matriz de entrada*/
         inicializa_matriz_entrada();
+        gera_arquivo_saida();
+        
         
         /*Simulated Annealing*/
         
@@ -62,6 +65,60 @@ public class SAOptimization {
         
         melhor_solucao= simulated_annealing(stop2, stop1, temperatura, resfriamento);
        
+    }
+    
+    public static void gera_arquivo_saida() throws IOException
+    {
+        File file = new File("out.txt");
+        String concat="";
+        String indices="";
+        FileWriter fw = new FileWriter(file.getAbsoluteFile());
+	BufferedWriter bw = new BufferedWriter(fw);
+	bw.write("data;\n");
+        int i;
+        concat = "set A := ";
+        for(i=1; i<=dimension-1; i++){
+            concat = concat + i + ", ";
+            indices = indices + i + " ";
+        }
+        concat = concat + i + ";";
+        indices = indices + i + ":=\n";
+        
+        bw.write("\n");
+        bw.write("param p := " + facility_total + ";\n");
+        
+         bw.write("param dist: " + indices);
+         
+         
+         int j;
+         
+         for(i=0; i<dimension-1; i++)
+         {
+             int temp = i+1;
+             String linha ="";
+             linha = linha + temp + "\t";
+               for(j=0; j<dimension; j++)
+               {
+                   linha = linha + matriz_entrada[i][j] + " ";
+               }
+               bw.write(linha + "\n");
+               //linha = "";
+         }
+         //ultima linha
+         int temp = dimension - 1;
+         String linha ="";
+         linha = linha + dimension + "\t";
+         for(j = 0; j<dimension -1; j++)
+         {
+             linha = linha + matriz_entrada[i][j] + " ";
+         }
+         linha = linha + matriz_entrada[i][j] +";";
+         
+         bw.write(linha);
+         bw.close();
+        
+        
+        
     }
     
     public static int[][] simulated_annealing(int stop2, int stop1, double temperatura, double resfriamento)
