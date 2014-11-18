@@ -12,7 +12,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import org.ejml.simple.SimpleMatrix;
+import java.util.Arrays;
 
 /**
  *
@@ -30,10 +30,21 @@ public class SAOptimization {
     public static String delims = "[ ]+";
     public static String[] tokens;
     public static String text;
-    //public static  SimpleMatrix matriz_entrada;
-    public static int[][] matriz_entrada;
+    
+    /*Matrizes a serem utilizadas para solução*/
+    public static int[][] matriz_entrada;    
+    public static int[][] melhor_solucao;
+    public static int[][] solucao_candidata;
+    
     public static BufferedReader reader;
-
+    
+    /*Variáveis para entrada do algoritmo*/
+    public static int stop1, stop2;
+    public static double temperatura, resfriamento;
+    
+    /*Constantes extras definidas para o algoritmo*/
+    public static int VALOR_INFINITO = 9999;
+    public static double CRITERIO = 0.1;
     
     public static void main(String[] args) throws IOException {
         // TODO code application logic here
@@ -42,13 +53,111 @@ public class SAOptimization {
         inicializa_matriz_entrada();
         
         /*Simulated Annealing*/
-        simulated_annealing();
+        
+        stop1 = 10;
+        stop2 = 10;
+        temperatura = 10.0;
+        resfriamento = 0.4; //Valor [0,1]
+        
+        
+        melhor_solucao= simulated_annealing(stop2, stop1, temperatura, resfriamento);
        
     }
     
-    public static void simulated_annealing()
+    public static int[][] simulated_annealing(int stop2, int stop1, double temperatura, double resfriamento)
     {
-        int melhor_valor_global;
+        int melhor_valor_global = VALOR_INFINITO;
+        int valor_perturbacao;
+        int i,j;
+        
+        //1) Gera solução inicial
+        melhor_solucao = solucao_inicial(matriz_entrada);
+        //2) Obtem valor da solução inicial
+        melhor_valor_global = funcao_avaliacao(melhor_solucao);
+        
+        /*Inicia laço do algoritmo*/
+        //////////////////////
+        //repeat STOP2 vezes//
+        //////////////////////
+        for(i=0; i<stop2; i++)
+        {
+            //////////////////////
+            //repeat STOP1 vezes//
+            //////////////////////
+            for(j=0; j<stop1; j++)
+            {
+                //3) Perturba melhor solução atual      
+                
+                ///////////////////////////////////////////////////
+                //seleciona s '∈ N (s) que ainda não foi visitado//
+                ///////////////////////////////////////////////////
+                solucao_candidata = perturba_solucao(melhor_solucao);
+                //4) Avalia valor da solução perturbada
+                valor_perturbacao = funcao_avaliacao(solucao_candidata);
+                //5) Verifica se perturbação gerou resultado melhor
+                
+                ////////////////////////
+                //if f(s') ≤ f(s) then//
+                ////////////////////////
+                if(valor_perturbacao >= melhor_valor_global)
+                {
+                    //////////
+                    //s:= s'//
+                    //////////
+                    
+                    //Se gerou, atualiza solução global atual
+                    melhor_solucao = solucao_candidata;
+                    melhor_valor_global =  valor_perturbacao;
+                }
+                //6) Se não for melhor, analisa a probabilidade e ve se muda ou nao
+                else
+                {
+                    ////////////////////////////////////////////////////
+                    //Com probabilidade e^[−(f(s')−f(s))/kT] : s := s'//
+                    ////////////////////////////////////////////////////
+
+                    //7) Se probabilidade estiver dentro de algum critério, alterar solução mesmo não sendo a melhor
+                    if(probabilidade_de_saltos(valor_perturbacao, melhor_valor_global, temperatura)> CRITERIO)
+                    {                        
+                      melhor_solucao = solucao_candidata;
+                      melhor_valor_global = valor_perturbacao;
+                    }    
+                }
+            }
+            //////////////
+            //T := T × r//
+            //////////////
+            temperatura = temperatura * resfriamento;
+        }
+        
+        return melhor_solucao;
+        
+    }
+    
+    public static int funcao_avaliacao(int[][] matriz)
+    {
+        //Ainda não implementado
+        return 0;
+    }
+    
+    public static int[][] solucao_inicial(int[][] matriz)
+    {
+        //Ainda não implementado  
+        return matriz;
+    }
+    
+    public static int[][] perturba_solucao(int[][] matriz)
+    {
+        //Ainda não implementado        
+        
+        return matriz;
+    }
+    
+    public static double probabilidade_de_saltos(int valor_candidato, int valor_global, double temperatura)
+    {
+        //Com probabilidade e^[−(f(s')−f(s))/kT]
+        //-Lembro da professora ter falado sobe o K não fazer muita diferença e por isso poderíamos ignorar
+        return Math.exp(-(valor_candidato - valor_global)/temperatura);
     }
     
     public static void inicializa_matriz_entrada() throws FileNotFoundException, IOException
@@ -105,6 +214,13 @@ public class SAOptimization {
          int facilidade;
          int cliente;
          int custo;
+         
+         int i,j;
+         
+         for(i=0;i<dimension;i++)
+             for(j=0; j<dimension;j++)            
+                 matriz_entrada[i][j] = VALOR_INFINITO;
+         
          /*Enquanto não leu tudo do arquivo*/          
          while(reader.read() != -1)
          {
@@ -125,7 +241,6 @@ public class SAOptimization {
             
          }
          
-         int i,j;
          for(i=0; i<dimension; i++){
              for(j=0; j<dimension; j++)
             {
