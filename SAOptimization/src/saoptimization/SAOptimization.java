@@ -136,7 +136,35 @@ public class SAOptimization {
     
     public static int funcao_avaliacao(int[][] matriz)
     {
-        //Ainda não implementado
+        
+        /*
+            -Percorre só metade da matriz
+            1) Para cada diagonal  = 0 soma os valores das COLUNAS da esquerda e LINHAS abaixo 
+        pois esses valores indicam o custo do transporte daquela facilidade para os clientes.
+        */  
+        int i,j;
+        int custo =0;
+        for(i=0; i<dimension; i++)
+        {
+            //Verifica se diagonal da matriz = 0
+            if(matriz[i][i] == 0)
+            {
+                int coluna;
+                //Pega os elementos da coluna da esqueda e soma custo, pois estão indicando conexão
+                for(coluna=i-1; coluna>=0; coluna--)
+                {
+                  custo = custo + matriz[i][coluna];  
+                }
+                int linha;
+                //Pega os elementos (clientes da facilidade) da linha abaixo da facilidade e soma o custo de transporte
+                for(linha = i+1; linha<dimension; linha++)
+                {
+                    custo = custo + matriz[linha][i];
+                }
+            }
+        }
+        
+        
         return 0;
     }
     
