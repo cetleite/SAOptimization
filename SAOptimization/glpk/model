@@ -1,22 +1,31 @@
 set A;							#conjunto de nodos
-set mediana;					#numero de facilidades que devem ser instaladas
 
 #Parametros
 param n1 {i in A};				#noh 1
 param n2 {i in A};				#noh 2
 param dist {i in A, j in A};	#custo de transporte de no 1 para no j
 
+param p;						#numero de facilidades que devem ser instaladas
+
 #Variavel
-var a {i in A, j in A} binary;	#se facilidade no nodo i atende cliente no nodo j
+var x {i in A, j in A} binary;	#se facilidade no nodo i atende cliente no nodo j
+var y {i in A} binary;			#se tem facilidade no nodo i
 
 #Funcao objetivo
 minimize custoTotal:
-	sum{i in A} sum{j in A}( a[i, j] * dist[i, j]);
+	sum{i in A} sum{j in A}( x[i, j] * dist[i, j]);
 
 #Restricoes
-s.t. minimimo_instalacoes:				#se foram instaladas exatas 'medianas' facilidades
-	sum{i in A} a[i, i] = mediana;
+s.t. atendido{i in A}:					#se todos os clientes i foram atendidos por exatamente uma facilidade
+	sum{j in A} x[i, j] = 1;
 
-s.t. clientes_atendidos{i in A}:		#se todos os clientes foram atendidos por exatamente uma facilidade
-	sum{j in A} a[i, j] = 1;
+s.t. yigualx{i in A, j in A}:			#se em j existe uma facilidade
+	x[i,j] <= y[j];
+
+s.t. facilidades_instaladas:			#se foram instaladas exatas 'p' facilidades
+	sum{i in A} y[i] = p;
+
+#s.t. facilidades_nao_ligadas{i in A, j in A}:		#isso aqui nao resolve o problema, apesar de eu achar que ia
+#	y[i] + y[j] <= 1;
+
 end;
