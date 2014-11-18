@@ -1,7 +1,7 @@
 Problem:    model
 Rows:       57
 Columns:    30 (30 integer, 30 binary)
-Non-zeros:  139
+Non-zeros:  136
 Status:     INTEGER UNDEFINED
 Objective:  custoTotal = 0 (MINimum)
 
@@ -40,56 +40,31 @@ Objective:  custoTotal = 0 (MINimum)
     31 yigualx[5,5]                0                          -0 
     32 facilidades_instaladas
                                    0             2             = 
-    33 facilidades_nao_ligadas[1,1]
-                                   0                           1 
-    34 facilidades_nao_ligadas[1,2]
-                                   0                           1 
-    35 facilidades_nao_ligadas[1,3]
-                                   0                           1 
-    36 facilidades_nao_ligadas[1,4]
-                                   0                           1 
-    37 facilidades_nao_ligadas[1,5]
-                                   0                           1 
-    38 facilidades_nao_ligadas[2,1]
-                                   0                           1 
-    39 facilidades_nao_ligadas[2,2]
-                                   0                           1 
-    40 facilidades_nao_ligadas[2,3]
-                                   0                           1 
-    41 facilidades_nao_ligadas[2,4]
-                                   0                           1 
-    42 facilidades_nao_ligadas[2,5]
-                                   0                           1 
-    43 facilidades_nao_ligadas[3,1]
-                                   0                           1 
-    44 facilidades_nao_ligadas[3,2]
-                                   0                           1 
-    45 facilidades_nao_ligadas[3,3]
-                                   0                           1 
-    46 facilidades_nao_ligadas[3,4]
-                                   0                           1 
-    47 facilidades_nao_ligadas[3,5]
-                                   0                           1 
-    48 facilidades_nao_ligadas[4,1]
-                                   0                           1 
-    49 facilidades_nao_ligadas[4,2]
-                                   0                           1 
-    50 facilidades_nao_ligadas[4,3]
-                                   0                           1 
-    51 facilidades_nao_ligadas[4,4]
-                                   0                           1 
-    52 facilidades_nao_ligadas[4,5]
-                                   0                           1 
-    53 facilidades_nao_ligadas[5,1]
-                                   0                           1 
-    54 facilidades_nao_ligadas[5,2]
-                                   0                           1 
-    55 facilidades_nao_ligadas[5,3]
-                                   0                           1 
-    56 facilidades_nao_ligadas[5,4]
-                                   0                           1 
-    57 facilidades_nao_ligadas[5,5]
-                                   0                           1 
+    33 das[1,1]                    0             1             = 
+    34 das[1,2]                    0             1             = 
+    35 das[1,3]                    0             1             = 
+    36 das[1,4]                    0             1             = 
+    37 das[1,5]                    0             1             = 
+    38 das[2,1]                    0             1             = 
+    39 das[2,2]                    0             1             = 
+    40 das[2,3]                    0             1             = 
+    41 das[2,4]                    0             1             = 
+    42 das[2,5]                    0             1             = 
+    43 das[3,1]                    0             1             = 
+    44 das[3,2]                    0             1             = 
+    45 das[3,3]                    0             1             = 
+    46 das[3,4]                    0             1             = 
+    47 das[3,5]                    0             1             = 
+    48 das[4,1]                    0             1             = 
+    49 das[4,2]                    0             1             = 
+    50 das[4,3]                    0             1             = 
+    51 das[4,4]                    0             1             = 
+    52 das[4,5]                    0             1             = 
+    53 das[5,1]                    0             1             = 
+    54 das[5,2]                    0             1             = 
+    55 das[5,3]                    0             1             = 
+    56 das[5,4]                    0             1             = 
+    57 das[5,5]                    0             1             = 
 
    No. Column name       Activity     Lower bound   Upper bound
 ------ ------------    ------------- ------------- -------------
