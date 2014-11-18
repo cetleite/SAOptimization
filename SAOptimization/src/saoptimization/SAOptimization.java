@@ -49,14 +49,10 @@ public class SAOptimization {
     public static void simulated_annealing()
     {
         int melhor_valor_global;
-        
-        
     }
     
     public static void inicializa_matriz_entrada() throws FileNotFoundException, IOException
     {
-        
-        
         InputStream in = new FileInputStream(new File("in.txt"));
         reader = new BufferedReader(new InputStreamReader(in));
         StringBuilder out = new StringBuilder();
@@ -138,9 +134,6 @@ public class SAOptimization {
              System.out.print("\n");
              
          }
-                 
-        
-        
     }
 }
     
