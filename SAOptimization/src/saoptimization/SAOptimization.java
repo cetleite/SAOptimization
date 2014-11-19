@@ -44,7 +44,7 @@ public class SAOptimization {
     public static double temperatura, resfriamento;
     
     /*Constantes extras definidas para o algoritmo*/
-    public static int VALOR_INFINITO = 9999;
+    public static int VALOR_INFINITO = 99999;
     public static double CRITERIO = 0.1;
     
     public static void main(String[] args) throws IOException {
@@ -272,6 +272,7 @@ public class SAOptimization {
                /*Inicializa matriz com a dimensão obtida*/
                matriz_entrada = new int[dimension][dimension];
                reader.readLine(); //Pula " Facility, Client, Transportation Cost"
+                                                 
                
                /*Executa a leitura dos elementos da matriz*/
                inicializa_elementos_da_matriz(1);                                                                                  
@@ -310,6 +311,7 @@ public class SAOptimization {
          for(i=0;i<dimension;i++)
              for(j=0; j<dimension;j++)
              {
+                 //Coloca diagonal = 0
                  if(j==i)
                     matriz_entrada[i][j] = 0;
                  else
@@ -326,23 +328,35 @@ public class SAOptimization {
              cliente =  Integer.parseInt(tokens[TIPO_ENTRADA + 1]) - 1;
              custo = Integer.parseInt(tokens[TIPO_ENTRADA + 2]);
              
-             //System.out.print(facilidade + "");
+               //System.out.print(facilidade+1+" ");
+               //System.out.print(cliente+1+" ");
+               //System.out.print(custo);
+               //System.out.println();             
              
              /*Atualiza informações na matriz*/
-            matriz_entrada[facilidade][cliente] = custo;
-            matriz_entrada[cliente][facilidade] = custo;
-            
+            if(TIPO_ENTRADA == 0)
+            {
+                matriz_entrada[facilidade][cliente] = custo;
+                matriz_entrada[cliente][facilidade] = custo;
+            }
+            else if(TIPO_ENTRADA == 1)
+            {
+                matriz_entrada[facilidade][cliente] = custo;
+            }                                   
             
          }
+         
          
          for(i=0; i<dimension; i++){
              for(j=0; j<dimension; j++)
             {
-                System.out.print(matriz_entrada[i][j]+" ");
+                    System.out.print(matriz_entrada[i][j]+" ");
             }
              System.out.print("\n");
              
          }
+         
+         
     }
 }
     
