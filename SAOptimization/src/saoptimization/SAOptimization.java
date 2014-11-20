@@ -59,7 +59,8 @@ public class SAOptimization {
     /*Gerador de números aleatórios*/
     public static Random gerador_aleatorios;
 
-    public static File file1 = new File("ogapA332.txt");
+    //public static File file1 = new File("ogapA332.txt");
+    public static File file1 = new File("testeee.txt");
     public static File file2 = new File("ogapA1232.txt");
     public static File file3 = new File("ogapB331.txt");
     public static File file4 = new File("ogapB1131.txt");
@@ -70,7 +71,8 @@ public class SAOptimization {
     public static File file9 = new File("opmed20.txt");
     public static File file10 = new File("opmed40.txt");
     
-    public static File infile1 = new File("332PM_GapA.txt");
+    //public static File infile1 = new File("332PM_GapA.txt");
+    public static File infile1 = new File("inaaa.txt");
     public static File infile2 = new File("1232PM_GapA.txt");
     public static File infile3 = new File("331PM_GapB.txt");
     public static File infile4 = new File("1131PM_GapB.txt");
@@ -87,6 +89,8 @@ public class SAOptimization {
         /*Le matriz de entrada*/
         inicializa_matriz_entrada(infile1);
         gera_arquivo_saida(file1);
+        
+        System.out.println("GEROU MATRIZ E ARQUIVO DE SAIDA");
         
         /*
         inicializa_matriz_entrada(infile2);
@@ -117,8 +121,9 @@ public class SAOptimization {
         temperatura = 10.0;
         resfriamento = 0.4; //Valor [0,1]
 
-        melhor_solucao = simulated_annealing(stop2, stop1, temperatura, resfriamento);
+        //melhor_solucao = simulated_annealing(stop2, stop1, temperatura, resfriamento);
        
+        solucao_inicial();
     }
 
     public static void gera_arquivo_saida(File file) throws IOException
@@ -181,7 +186,7 @@ public class SAOptimization {
         int i,j;
        
         //1) Gera solução inicial
-        melhor_solucao = solucao_inicial(matriz_entrada);
+        melhor_solucao = solucao_inicial();
         
         System.out.println("ENCONTROU SOLUÇÃO INICIAL FACTÍVEL!!");
         
@@ -306,18 +311,18 @@ public class SAOptimization {
         }               
         
 
-        /*
-            for (Integer item : p) 
+       
+            for (Integer item : pmed) 
             {   
                 System.out.print(item + " ");
             }
         
-        */
+       
         
         return pmed;
     }
     
-    public static int[][] solucao_inicial(int[][] matriz)
+    public static int[][] solucao_inicial()
     {
         /*
         1) INICIALIZA MATRIZ COM VALORES INFINITOS
@@ -332,15 +337,27 @@ public class SAOptimization {
         int FACTIVEL = 0;
 
         
+        for(int i=0; i<dimension; i++){
+             for(int j=0; j<dimension; j++)
+            {
+                    System.out.print(matriz_entrada[i][j]+" ");
+            }
+             System.out.print("\n");
+         }  
+         
+          System.out.println("MATRIZ[0][2] = " + matriz_entrada[0][2]);
+        
         /////////////////////////////////////////////////
         //    INICIALIZA MATRIZ COM VALORES INFINITOS  //
         /////////////////////////////////////////////////
         //                                             //
         for(int i=0; i<dimension;i++)
             for(int j=0; j<dimension; j++)
-                matriz[i][j] = VALOR_INFINITO;
+                melhor_solucao[i][j] = VALOR_INFINITO;
         //                                             //
         /////////////////////////////////////////////////
+              
+        
         
         //System.out.println("INCIALIZOU MATRIZ COM INFINITO");
         
@@ -352,7 +369,7 @@ public class SAOptimization {
             /*****************************************************/
             p = seleciona_p_medianas(); //Seleciona randomicamente as p facilidades
             
-            //System.out.println("SELECIONOU AS P-MEDIANAS");
+            System.out.println("SELECIONOU AS P-MEDIANAS");
             /*************************************************/
             /*2) LIGA OS CLIENTES ÀS FACILIDADES MAIS PRÓXIMA*/
             /*************************************************/
@@ -363,7 +380,7 @@ public class SAOptimization {
                 int melhor_distancia_atual = VALOR_INFINITO; 
                 if(!p.contains(cliente)) //Só analisa nó se este não for uma facilidade
                 {             
-                    //System.out.println("Verificando cliente" + cliente);
+                    System.out.println("Verificando cliente" + cliente);
                     //############################################################
                     //#Verifica a menor distância do cliente para cada facilidade#                  
                     //############################################################
@@ -372,9 +389,11 @@ public class SAOptimization {
                     while(itr.hasNext())
                     {
                         int facilidade = itr.next();//Seleciona uma facilidade e verifica a distancia até cliente         
+                        System.out.println("Matriz_entrada["+facilidade+"]"+"["+cliente+"]"+ " = " + matriz_entrada[facilidade][cliente]);
                         if(matriz_entrada[facilidade][cliente] < melhor_distancia_atual)//Se encontrou menor distância que a atual, atualiza
                         { //Se for melhor atualiza                        
-                            matriz[facilidade][cliente] = matriz_entrada[facilidade][cliente];
+                            melhor_solucao[facilidade][cliente] = matriz_entrada[facilidade][cliente];
+                            System.out.println("ACHOU LIGAÇÃO entre" + facilidade + " e " + cliente);
                             cliente_antendido = TRUE;
                         }                        
                     }
@@ -388,14 +407,14 @@ public class SAOptimization {
                 cliente++;
             }
             
-            //System.out.println("VERIFICOU UM POSSÍVEL CENÁRIO");
+            System.out.println("VERIFICOU UM POSSÍVEL CENÁRIO");
             
             /*******************************************/
             /*4) DETECTOU UMA SOLUÇÃO FACTÍVEL POSSÍVEL*/
             /*******************************************/
             if(solucao == FACTIVEL)
             {
-                //System.out.println("ENCONTROU SOLUÇÃO FACTÍVEL");
+                System.out.println("ENCONTROU SOLUÇÃO FACTÍVEL");
                 sem_solucao = FALSE;
             }
         }
@@ -406,15 +425,15 @@ public class SAOptimization {
         //                                          //
             for (Integer facilidade : p)
             {
-                matriz[facilidade][facilidade] = 0;
+                melhor_solucao[facilidade][facilidade] = 0;
             }
         //                                          //
         //////////////////////////////////////////////
         
             System.out.println("ATUALIZOU DIAGONAL DAS FACILIDADES");
-        //Ainda não implementado
 
-        return matriz;
+
+        return melhor_solucao;
     }
     
     public static int[][] perturba_solucao()
@@ -454,6 +473,8 @@ public class SAOptimization {
                facility_total = Integer.parseInt(tokens[2]);
                /*Inicializa matriz com a dimensão obtida*/
                matriz_entrada = new int[dimension][dimension];
+               melhor_solucao = new int[dimension][dimension];
+               solucao_candidata = new int[dimension][dimension];
                reader.readLine(); //Pula " Facility, Client, Transportation Cost"
                                                  
                
@@ -532,9 +553,9 @@ public class SAOptimization {
          for(i=0; i<dimension; i++){
              for(j=0; j<dimension; j++)
             {
-                    //System.out.print(matriz_entrada[i][j]+" ");
+                    System.out.print(matriz_entrada[i][j]+" ");
             }
-             //System.out.print("\n");
+             System.out.print("\n");
          }  
     }
 }
