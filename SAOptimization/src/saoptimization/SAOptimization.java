@@ -109,9 +109,6 @@ public class SAOptimization {
         gera_arquivo_saida(file10);
         */
 
-        gerador_aleatorios = new Random();
-
-        p = new ArrayList<Integer>();
         
         /*Simulated Annealing*/
         
@@ -185,6 +182,11 @@ public class SAOptimization {
        
         //1) Gera solução inicial
         melhor_solucao = solucao_inicial(matriz_entrada);
+        
+        System.out.println("ENCONTROU SOLUÇÃO INICIAL FACTÍVEL!!");
+        
+        
+        
         //2) Obtem valor da solução inicial
         melhor_valor_global = funcao_avaliacao(melhor_solucao);
         
@@ -286,18 +288,21 @@ public class SAOptimization {
     
     public static ArrayList<Integer> seleciona_p_medianas()
     {
-        int[] myIntArray = new int[facility_total];
         Random rand = new Random();
         int i;
         int facility;
         
+       ArrayList <Integer> pmed = new ArrayList<Integer>();
+        
         for(i=0; i<facility_total; i++)
         {
             facility = rand.nextInt(dimension);
-            while(p.contains(facility))
+            while(pmed.contains(facility))
+            {
                 facility = rand.nextInt(dimension);
+            }
             
-            p.add(facility);
+            pmed.add(facility);
         }               
         
 
@@ -309,7 +314,7 @@ public class SAOptimization {
         
         */
         
-        return p;
+        return pmed;
     }
     
     public static int[][] solucao_inicial(int[][] matriz)
@@ -337,6 +342,8 @@ public class SAOptimization {
         //                                             //
         /////////////////////////////////////////////////
         
+        //System.out.println("INCIALIZOU MATRIZ COM INFINITO");
+        
         int sem_solucao = TRUE;
         while(sem_solucao == TRUE)
         {
@@ -345,6 +352,7 @@ public class SAOptimization {
             /*****************************************************/
             p = seleciona_p_medianas(); //Seleciona randomicamente as p facilidades
             
+            //System.out.println("SELECIONOU AS P-MEDIANAS");
             /*************************************************/
             /*2) LIGA OS CLIENTES ÀS FACILIDADES MAIS PRÓXIMA*/
             /*************************************************/
@@ -354,7 +362,8 @@ public class SAOptimization {
             {                
                 int melhor_distancia_atual = VALOR_INFINITO; 
                 if(!p.contains(cliente)) //Só analisa nó se este não for uma facilidade
-                {                              
+                {             
+                    //System.out.println("Verificando cliente" + cliente);
                     //############################################################
                     //#Verifica a menor distância do cliente para cada facilidade#                  
                     //############################################################
@@ -367,7 +376,7 @@ public class SAOptimization {
                         { //Se for melhor atualiza                        
                             matriz[facilidade][cliente] = matriz_entrada[facilidade][cliente];
                             cliente_antendido = TRUE;
-                        }
+                        }                        
                     }
                     /*******************************/
                     /*3) DETECTA SOLUÇÃO INFACTIVEL*/
@@ -379,11 +388,14 @@ public class SAOptimization {
                 cliente++;
             }
             
+            //System.out.println("VERIFICOU UM POSSÍVEL CENÁRIO");
+            
             /*******************************************/
             /*4) DETECTOU UMA SOLUÇÃO FACTÍVEL POSSÍVEL*/
             /*******************************************/
             if(solucao == FACTIVEL)
             {
+                //System.out.println("ENCONTROU SOLUÇÃO FACTÍVEL");
                 sem_solucao = FALSE;
             }
         }
@@ -399,6 +411,7 @@ public class SAOptimization {
         //                                          //
         //////////////////////////////////////////////
         
+            System.out.println("ATUALIZOU DIAGONAL DAS FACILIDADES");
         //Ainda não implementado
 
         return matriz;
