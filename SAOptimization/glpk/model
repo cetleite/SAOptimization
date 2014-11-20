@@ -23,6 +23,9 @@ s.t. atendido{j in A}: 			#se todos os clientes i foram atendidos por exatamente
 s.t. yigualx{i in A, j in A}: 	#se em j existe uma facilidade
 	x[i, j] <= x[i, i];
 
+s.t. espelhamento{i in A, j in A}: 	#se em j existe uma facilidade
+	x[i, j] <= x[j, i];
+
 s.t. facilidades_instaladas: 	#se foram instaladas exatas 'p' facilidades
 	sum{i in A} x[i, i] = p;
 

@@ -15,8 +15,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+
 import java.util.Iterator;
 import java.util.Random;
+
+
 
 /**
  *
@@ -241,36 +244,36 @@ public class SAOptimization {
     
     public static int funcao_avaliacao(int[][] matriz)
     {
-        
         /*
-            -Percorre só metade da matriz
-            1) Para cada diagonal  = 0 soma os valores das COLUNAS da esquerda e LINHAS abaixo 
-        pois esses valores indicam o custo do transporte daquela facilidade para os clientes.
+            Percorre matriz calculando o custo total
+            se diagonal = 0, é uma facilidade
         */  
-        int i,j;
-        int custo =0;
+        int i, j;
+        
+        int[] distancias;
+
+        distancias = new int[dimension];
+
+        for(i=0; i<dimension; i++)
+            distancias[i] = VALOR_INFINITO; //inicializa vetor de distâncias
+
         for(i=0; i<dimension; i++)
         {
-            //Verifica se diagonal da matriz = 0
+            //Verifica se i é uma facilidade
             if(matriz[i][i] == 0)
             {
-                int coluna;
-                //Pega os elementos da coluna da esqueda e soma custo, pois estão indicando conexão
-                for(coluna=i-1; coluna>=0; coluna--)
-                {
-                  custo = custo + matriz[i][coluna];  
-                }
-                int linha;
-                //Pega os elementos (clientes da facilidade) da linha abaixo da facilidade e soma o custo de transporte
-                for(linha = i+1; linha<dimension; linha++)
-                {
-                    custo = custo + matriz[linha][i];
-                }
+                for(j=0; j<dimension; j++)
+                    if(matriz[i][j] < distancias[j])    //verifica se distancia de i pra j é menor que a menor já encontrada
+                        distancias[j] = matriz[i][j];   //se for, atualiza a menor distância pra j
             }
         }
-        
-        
-        return 0;
+
+        int total = 0;
+
+        for(i=0; i<dimension; i++)
+            total += distancias[i];     //calcula a distancia total
+
+        return total;
     }
     
     
@@ -393,6 +396,8 @@ public class SAOptimization {
         //                                          //
         //////////////////////////////////////////////
         
+        //Ainda não implementado
+
         return matriz;
     }
     
@@ -505,18 +510,14 @@ public class SAOptimization {
             }                                   
             
          }
-         
-         
+
          for(i=0; i<dimension; i++){
              for(j=0; j<dimension; j++)
             {
                     //System.out.print(matriz_entrada[i][j]+" ");
             }
              //System.out.print("\n");
-             
-         }
-         
-         
+         }  
     }
 }
     

@@ -9,7 +9,7 @@ param p; 						#numero de facilidades que devem ser instaladas
 #Variavel
 
 var x {i in A, j in A} binary; 	#se facilidade no nodo i atende cliente no nodo j
-var y {j in A};
+var y {j in A};					#se nodo j é facilidade
 
 #Funcao objetivo
 
