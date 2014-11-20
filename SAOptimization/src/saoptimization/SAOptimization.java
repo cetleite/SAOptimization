@@ -353,6 +353,7 @@ public class SAOptimization {
             while(cliente<dimension && solucao == FACTIVEL)                        
             {                
                 int melhor_distancia_atual = VALOR_INFINITO; 
+
                 if(!p.contains(cliente)) //Só analisa nó se este não for uma facilidade
                 {                              
                     //############################################################
@@ -406,9 +407,15 @@ public class SAOptimization {
     
     public static int[][] perturba_solucao()
     {
-        int nova_facilidade = gerador_aleatorios.nextInt(dimension);
+        int entra_facilidade = gerador_aleatorios.nextInt(dimension);
         
-        //melhor_solucao[][];
+        int sai_indice = gerador_aleatorios.nextInt(p.size());
+
+        int sai_facilidade = p.get(sai_indice);
+
+        p.remove(sai_facilidade);
+
+        p.add(entra_facilidade);
         
         return melhor_solucao;
     }
