@@ -1,0 +1,30 @@
+set A;	#conjunto de nodos
+
+#Parametros
+param n1 {i in A}; 				#noh 1
+param n2 {i in A}; 				#noh 2
+param dist {i in A, j in A}; 	#custo de transporte de no 1 para no j
+param p; 						#numero de facilidades que devem ser instaladas
+
+#Variavel
+
+var x {i in A, j in A} binary; 	#se facilidade no nodo i atende cliente no nodo j
+var y {j in A};
+
+#Funcao objetivo
+
+minimize custoTotal:
+	sum{i in A} sum{j in A}( x[i, j] * dist[i, j]);
+
+#Restricoes
+
+s.t. atendido{j in A}: 			#se todos os clientes i foram atendidos por exatamente uma facilidade
+	sum{i in A} x[i, j] = 1;
+
+s.t. yigualx{i in A, j in A}: 	#se em j existe uma facilidade
+	x[i, j] <= y[j];
+
+s.t. facilidades_instaladas: 	#se foram instaladas exatas 'p' facilidades
+	sum{j in A} y[j] = p;
+
+end;

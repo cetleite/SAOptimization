@@ -47,12 +47,53 @@ public class SAOptimization {
     public static int VALOR_INFINITO = 99999;
     public static double CRITERIO = 0.1;
     
+    
+    
+    public static File file1 = new File("ogapA332.txt");
+    public static File file2 = new File("ogapA1232.txt");
+    public static File file3 = new File("ogapB331.txt");
+    public static File file4 = new File("ogapB1131.txt");
+    public static File file5 = new File("ogapC333.txt");
+    public static File file6 = new File("ogapC1633.txt");
+    public static File file7 = new File("opmed5.txt");
+    public static File file8 = new File("opmed10.txt");
+    public static File file9 = new File("opmed20.txt");
+    public static File file10 = new File("opmed40.txt");
+    
+    public static File infile1 = new File("332PM_GapA.txt");
+    public static File infile2 = new File("1232PM_GapA.txt");
+    public static File infile3 = new File("331PM_GapB.txt");
+    public static File infile4 = new File("1131PM_GapB.txt");
+    public static File infile5 = new File("333PM_GapC.txt");
+    public static File infile6 = new File("1633PM_GapC.txt");
+    public static File infile7 = new File("pmed5.txt");
+    public static File infile8 = new File("pmed10.txt");
+    public static File infile9 = new File("pmed20.txt");
+    public static File infile10 = new File("pmed40.txt");
     public static void main(String[] args) throws IOException {
         // TODO code application logic here
         
         /*Le matriz de entrada*/
-        inicializa_matriz_entrada();
-        gera_arquivo_saida();
+        inicializa_matriz_entrada(infile1);
+        gera_arquivo_saida(file1);
+        inicializa_matriz_entrada(infile2);
+        gera_arquivo_saida(file2);
+        inicializa_matriz_entrada(infile3);
+        gera_arquivo_saida(file3);
+        inicializa_matriz_entrada(infile4);
+        gera_arquivo_saida(file4);
+        inicializa_matriz_entrada(infile5);
+        gera_arquivo_saida(file5);
+        inicializa_matriz_entrada(infile6);
+        gera_arquivo_saida(file6);
+        inicializa_matriz_entrada(infile7);
+        gera_arquivo_saida(file7);
+        inicializa_matriz_entrada(infile8);
+        gera_arquivo_saida(file8);
+        inicializa_matriz_entrada(infile9);
+        gera_arquivo_saida(file9);
+        inicializa_matriz_entrada(infile10);
+        gera_arquivo_saida(file10);
         
         
         /*Simulated Annealing*/
@@ -67,9 +108,9 @@ public class SAOptimization {
        
     }
     
-    public static void gera_arquivo_saida() throws IOException
+    public static void gera_arquivo_saida(File file) throws IOException
     {
-        File file = new File("out.txt");
+        //File file = new File("out.txt");
         String concat="";
         String indices="";
         FileWriter fw = new FileWriter(file.getAbsoluteFile());
@@ -117,6 +158,7 @@ public class SAOptimization {
          linha = linha + matriz_entrada[i][j] +";";
          
          bw.write(linha);
+         bw.write("\nend;");
          bw.close();
         
         
@@ -128,7 +170,7 @@ public class SAOptimization {
         int melhor_valor_global = VALOR_INFINITO;
         int valor_perturbacao;
         int i,j;
-        
+       
         //1) Gera solução inicial
         melhor_solucao = solucao_inicial(matriz_entrada);
         //2) Obtem valor da solução inicial
@@ -176,7 +218,7 @@ public class SAOptimization {
                     ////////////////////////////////////////////////////
 
                     //7) Se probabilidade estiver dentro de algum critério, alterar solução mesmo não sendo a melhor
-                    if(probabilidade_de_saltos(valor_perturbacao, melhor_valor_global, temperatura)> CRITERIO)
+                    if(probabilidade_de_saltos(valor_perturbacao, melhor_valor_global, temperatura)> Math.random()*(1-0)+0)
                     {                        
                       melhor_solucao = solucao_candidata;
                       melhor_valor_global = valor_perturbacao;
@@ -250,9 +292,9 @@ public class SAOptimization {
         return Math.exp(-(valor_candidato - valor_global)/temperatura);
     }
     
-    public static void inicializa_matriz_entrada() throws FileNotFoundException, IOException
+    public static void inicializa_matriz_entrada(File file_path) throws FileNotFoundException, IOException
     {
-        InputStream in = new FileInputStream(new File("in.txt"));
+        InputStream in = new FileInputStream(file_path);
         reader = new BufferedReader(new InputStreamReader(in));
         StringBuilder out = new StringBuilder();
                 
@@ -291,7 +333,7 @@ public class SAOptimization {
                matriz_entrada = new int[dimension][dimension];
                
                
-               System.out.println(dimension);                     
+               //System.out.println(dimension);                     
                
                /*Executa a leitura dos elementos da matriz*/
                inicializa_elementos_da_matriz(0);
@@ -350,9 +392,9 @@ public class SAOptimization {
          for(i=0; i<dimension; i++){
              for(j=0; j<dimension; j++)
             {
-                    System.out.print(matriz_entrada[i][j]+" ");
+                    //System.out.print(matriz_entrada[i][j]+" ");
             }
-             System.out.print("\n");
+             //System.out.print("\n");
              
          }
          
