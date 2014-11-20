@@ -206,7 +206,7 @@ public class SAOptimization {
                 ///////////////////////////////////////////////////
                 //seleciona s '∈ N (s) que ainda não foi visitado//
                 ///////////////////////////////////////////////////
-                solucao_candidata = perturba_solucao();
+                solucao_candidata = perturba_solucao(melhor_solucao);
                 //4) Avalia valor da solução perturbada
                 valor_perturbacao = funcao_avaliacao(solucao_candidata);
                 //5) Verifica se perturbação gerou resultado melhor
@@ -264,15 +264,13 @@ public class SAOptimization {
         for(i=0; i<dimension; i++)
             distancias[i] = VALOR_INFINITO; //inicializa vetor de distâncias
 
-        for(i=0; i<dimension; i++)
+        for(i=0; i<facility_total; i++)
         {
-            //Verifica se i é uma facilidade
-            if(matriz[i][i] == 0)
-            {
-                for(j=0; j<dimension; j++)
-                    if(matriz[i][j] < distancias[j])    //verifica se distancia de i pra j é menor que a menor já encontrada
-                        distancias[j] = matriz[i][j];   //se for, atualiza a menor distância pra j
-            }
+            int f = p.get(i);                       //seleciona facilidade
+
+            for(j=0; j<dimension; j++)
+                if(matriz[f][j] < distancias[j])    //verifica se distancia de i pra j é menor que a menor já encontrada
+                    distancias[j] = matriz[f][j];   //se for, atualiza a menor distância pra j
         }
 
         int total = 0;
@@ -418,19 +416,73 @@ public class SAOptimization {
         return matriz;
     }
     
-    public static int[][] perturba_solucao()
+    public static int[][] perturba_solucao(int[][] matriz)
     {
-        int entra_facilidade = gerador_aleatorios.nextInt(dimension);
+        int FACTIVEL = 0, INFACTIVEL = -1, FALSE = 0, TRUE = 1;
+
+        int solucao = FACTIVEL;
+
+        int cliente = 0;
         
-        int sai_indice = gerador_aleatorios.nextInt(p.size());
+        int[][] matriz_temp = new int[dimension][dimension];
 
-        int sai_facilidade = p.get(sai_indice);
+        while(cliente<dimension && solucao == FACTIVEL)
+        {
+            for(int i=0; i<dimension;i++)
+                for(int j=0; j<dimension;j++)
+                    matriz_temp[i][j] = matriz[i][j];
 
-        p.remove(sai_facilidade);
+            int entra_facilidade = gerador_aleatorios.nextInt(dimension);
 
-        p.add(entra_facilidade);
-        
-        return melhor_solucao;
+            int sai_indice = gerador_aleatorios.nextInt(p.size());
+
+            int sai_facilidade = p.get(sai_indice);
+
+            p.remove(sai_facilidade);
+
+            p.add(entra_facilidade);
+
+                int melhor_distancia_atual = VALOR_INFINITO;
+
+                if(!p.contains(cliente)) //Só analisa nó se este não for uma facilidade
+                {
+                    //System.out.println("Verificando cliente" + cliente);
+                    //############################################################
+                    //#Verifica a menor distância do cliente para cada facilidade#
+                    //############################################################
+                    Iterator<Integer> itr = p.iterator();
+
+                    int cliente_antendido = FALSE;
+
+                    while(itr.hasNext())
+                    {
+                        int facilidade = itr.next();//Seleciona uma facilidade e verifica a distancia até cliente
+                        if(matriz_entrada[facilidade][cliente] < melhor_distancia_atual)//Se encontrou menor distância que a atual, atualiza
+                        { //Se for melhor atualiza
+                            matriz_temp[facilidade][cliente] = matriz_entrada[facilidade][cliente];
+                            cliente_antendido = TRUE;
+                        }
+                    }
+                    /*******************************/
+                    /*3) DETECTA SOLUÇÃO INFACTIVEL*/
+                    /*******************************/
+                    if(cliente_antendido == FALSE)//Verifica se cliente foi ligado com alguma facilidade
+                    {
+                        solucao = INFACTIVEL; //Indica que todo processo será repetido
+                        
+                        p.remove(entra_facilidade);
+
+                        p.add(sai_facilidade);
+                    }
+                }
+
+                cliente++;
+        }
+
+        for (Integer facilidade : p)
+            matriz_temp[facilidade][facilidade] = 0;
+
+        return matriz_temp;
     }
     
     public static double probabilidade_de_saltos(int valor_candidato, int valor_global, double temperatura)
