@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Random;
 
 /**
  *
@@ -37,7 +38,9 @@ public class SAOptimization {
     public static int[][] matriz_entrada;    
     public static int[][] melhor_solucao;
     public static int[][] solucao_candidata;
-    
+
+    public static int[] facilidades;
+
     public static BufferedReader reader;
     
     /*Variáveis para entrada do algoritmo*/
@@ -48,8 +51,9 @@ public class SAOptimization {
     public static int VALOR_INFINITO = 99999;
     public static double CRITERIO = 0.1;
     
-    
-    
+    /*Gerador de números aleatórios*/
+    public static Random gerador_aleatorios;
+
     public static File file1 = new File("ogapA332.txt");
     public static File file2 = new File("ogapA1232.txt");
     public static File file3 = new File("ogapB331.txt");
@@ -71,12 +75,14 @@ public class SAOptimization {
     public static File infile8 = new File("pmed10.txt");
     public static File infile9 = new File("pmed20.txt");
     public static File infile10 = new File("pmed40.txt");
-    public static void main(String[] args) throws IOException {
-        // TODO code application logic here
-        
+
+
+    public static void main(String[] args) throws IOException
+    {
         /*Le matriz de entrada*/
         inicializa_matriz_entrada(infile1);
         gera_arquivo_saida(file1);
+
         inicializa_matriz_entrada(infile2);
         gera_arquivo_saida(file2);
         inicializa_matriz_entrada(infile3);
@@ -95,8 +101,9 @@ public class SAOptimization {
         gera_arquivo_saida(file9);
         inicializa_matriz_entrada(infile10);
         gera_arquivo_saida(file10);
-        
-        
+
+        gerador_aleatorios = new Random();
+
         /*Simulated Annealing*/
         
         stop1 = 10;
@@ -104,11 +111,14 @@ public class SAOptimization {
         temperatura = 10.0;
         resfriamento = 0.4; //Valor [0,1]
         
-        
-        melhor_solucao= simulated_annealing(stop2, stop1, temperatura, resfriamento);
+        facilidades = new int[facility_total];
+
+        melhor_solucao = simulated_annealing(stop2, stop1, temperatura, resfriamento);
        
     }
-    
+
+
+
     public static void gera_arquivo_saida(File file) throws IOException
     {
         //File file = new File("out.txt");
@@ -193,7 +203,7 @@ public class SAOptimization {
                 ///////////////////////////////////////////////////
                 //seleciona s '∈ N (s) que ainda não foi visitado//
                 ///////////////////////////////////////////////////
-                solucao_candidata = perturba_solucao(melhor_solucao);
+                solucao_candidata = perturba_solucao();
                 //4) Avalia valor da solução perturbada
                 valor_perturbacao = funcao_avaliacao(solucao_candidata);
                 //5) Verifica se perturbação gerou resultado melhor
@@ -267,6 +277,8 @@ public class SAOptimization {
         for(i=0; i<dimension; i++)
             total += distancias[i];     //calcula a distancia total
 
+        distancias = null;
+
         return total;
     }
     
@@ -277,11 +289,13 @@ public class SAOptimization {
         return matriz;
     }
     
-    public static int[][] perturba_solucao(int[][] matriz)
+    public static int[][] perturba_solucao()
     {
-        //Ainda não implementado        
+        int nova_facilidade = gerador_aleatorios.nextInt(dimension);
         
-        return matriz;
+        //melhor_solucao[][];
+        
+        return melhor_solucao;
     }
     
     public static double probabilidade_de_saltos(int valor_candidato, int valor_global, double temperatura)
