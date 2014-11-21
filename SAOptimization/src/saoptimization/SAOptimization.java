@@ -87,12 +87,14 @@ public class SAOptimization {
     public static void main(String[] args) throws IOException
     {
         /*Le matriz de entrada*/
-        inicializa_matriz_entrada(infile1);
-        gera_arquivo_saida(file1);
+        inicializa_matriz_entrada(infile4);
+        gera_arquivo_saida(file4);
         
         System.out.println("GEROU MATRIZ E ARQUIVO DE SAIDA");
         
         /*
+        inicializa_matriz_entrada(infile1);
+        gera_arquivo_saida(file1);
         inicializa_matriz_entrada(infile2);
         gera_arquivo_saida(file2);
         inicializa_matriz_entrada(infile3);
@@ -122,9 +124,10 @@ public class SAOptimization {
         temperatura = 10.0;
         resfriamento = 0.4; //Valor [0,1]
 
-        melhor_solucao = simulated_annealing(stop2, stop1, temperatura, resfriamento);
+        //melhor_solucao = simulated_annealing(stop2, stop1, temperatura, resfriamento);
        
-        //solucao_inicial();
+        solucao_inicial();
+        System.out.println(funcao_avaliacao(melhor_solucao));
     }
 
     public static void gera_arquivo_saida(File file) throws IOException
@@ -312,12 +315,15 @@ public class SAOptimization {
         }               
         
 
-            /*System.out.println(pmed.size());
+        /*
+            System.out.println(pmed.size());
+            System.out.print("P-med: ");
             for (Integer item : pmed) 
             {   
                 System.out.print(item + " ");
             }
         */
+        
         
        
         
@@ -337,18 +343,10 @@ public class SAOptimization {
         int TRUE = 1;
         int INFACTIVEL = -1;
         int FACTIVEL = 0;
-
-        
-        for(int i=0; i<dimension; i++){
-             for(int j=0; j<dimension; j++)
-            {
-                    //System.out.print(matriz_entrada[i][j]+" ");
-            }
-             //System.out.print("\n");
-         }  
          
-          //System.out.println("MATRIZ[0][2] = " + matriz_entrada[0][2]);
-        
+          System.out.println("MATRIZ[0][2] = " + matriz_entrada[0][2]);          
+         //melhor_solucao[0][0] = 2;  
+         System.out.println(dimension);
         /////////////////////////////////////////////////
         //    INICIALIZA MATRIZ COM VALORES INFINITOS  //
         /////////////////////////////////////////////////
@@ -389,23 +387,30 @@ public class SAOptimization {
                     //############################################################
                     Iterator<Integer> itr = p.iterator();
                     int cliente_antendido = FALSE;
-                    while(itr.hasNext())
+                    int encontrou = 0;
+                    while(itr.hasNext() && encontrou==0)
                     {
                         int facilidade = itr.next();//Seleciona uma facilidade e verifica a distancia até cliente         
                         //System.out.println("Matriz_entrada["+facilidade+"]"+"["+cliente+"]"+ " = " + matriz_entrada[facilidade][cliente]);
                         if(matriz_entrada[facilidade][cliente] < melhor_distancia_atual)//Se encontrou menor distância que a atual, atualiza
                         { //Se for melhor atualiza                        
                             melhor_solucao[facilidade][cliente] = matriz_entrada[facilidade][cliente];
-                            //System.out.println("ACHOU LIGAÇÃO entre" + facilidade + " e " + cliente);
+                           // System.out.println("ACHOU LIGAÇÃO entre" + facilidade + " e " + cliente);
                             cliente_antendido = TRUE;
+                            encontrou = 1;
                         }                        
                     }
                     /*******************************/
                     /*3) DETECTA SOLUÇÃO INFACTIVEL*/
                     /*******************************/
-                    if(cliente_antendido == FALSE)//Verifica se cliente foi ligado com alguma facilidade                                            
+                    if(cliente_antendido == FALSE){//Verifica se cliente foi ligado com alguma facilidade                                            
                         solucao = INFACTIVEL; //Indica que todo processo será repetido                                      
-                }
+                 
+                        for(int i=0; i<dimension;i++)
+                             for(int j=0; j<dimension; j++)
+                                    melhor_solucao[i][j] = VALOR_INFINITO;
+                    }
+                 }
                 
                 cliente++;
             }
@@ -435,7 +440,16 @@ public class SAOptimization {
         
             System.out.println("ATUALIZOU DIAGONAL DAS FACILIDADES");
 
-
+            /*
+             for(int i=0; i<dimension; i++){
+                for(int j=0; j<dimension; j++)
+            {
+                    System.out.print(melhor_solucao[i][j]+" ");
+            }                
+             System.out.print("\n");
+             }
+            
+            */
         return melhor_solucao;
     }
     
@@ -630,10 +644,11 @@ public class SAOptimization {
          for(i=0; i<dimension; i++){
              for(j=0; j<dimension; j++)
             {
-                    System.out.print(matriz_entrada[i][j]+" ");
+                    //System.out.print(matriz_entrada[i][j]+" ");
             }
              System.out.print("\n");
-         }  
+         }
+
     }
 }
     
