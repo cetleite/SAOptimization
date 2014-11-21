@@ -113,6 +113,7 @@ public class SAOptimization {
         gera_arquivo_saida(file10);
         */
 
+        gerador_aleatorios = new Random();
         
         /*Simulated Annealing*/
         
@@ -121,9 +122,9 @@ public class SAOptimization {
         temperatura = 10.0;
         resfriamento = 0.4; //Valor [0,1]
 
-        //melhor_solucao = simulated_annealing(stop2, stop1, temperatura, resfriamento);
+        melhor_solucao = simulated_annealing(stop2, stop1, temperatura, resfriamento);
        
-        solucao_inicial();
+        //solucao_inicial();
     }
 
     public static void gera_arquivo_saida(File file) throws IOException
@@ -195,6 +196,8 @@ public class SAOptimization {
         //2) Obtem valor da solução inicial
         melhor_valor_global = funcao_avaliacao(melhor_solucao);
         
+        System.out.println("JÁ CALCULOU FUNÇÃO DE AVALIAÇÃO!!");
+        
         /*Inicia laço do algoritmo*/
         //////////////////////
         //repeat STOP2 vezes//
@@ -265,7 +268,7 @@ public class SAOptimization {
         int[] distancias;
 
         distancias = new int[dimension];
-
+       
         for(i=0; i<dimension; i++)
             distancias[i] = VALOR_INFINITO; //inicializa vetor de distâncias
 
@@ -309,11 +312,12 @@ public class SAOptimization {
         }               
         
 
-       
+            /*System.out.println(pmed.size());
             for (Integer item : pmed) 
             {   
                 System.out.print(item + " ");
             }
+        */
         
        
         
@@ -327,7 +331,7 @@ public class SAOptimization {
         2) VERIFICA SE ACHOU UMA SOLUÇÃO POSSÍVEL
         3) SE ACHOU, COLOCAR VALOR 0 NO ELEMENTO DA DIAGONAL CORRESPONETE A FACILIDADE
         */    
-        ArrayList<Integer> p = new ArrayList<Integer>();
+        //ArrayList<Integer> p = new ArrayList<Integer>();
                      
         int FALSE = 0;
         int TRUE = 1;
@@ -338,12 +342,12 @@ public class SAOptimization {
         for(int i=0; i<dimension; i++){
              for(int j=0; j<dimension; j++)
             {
-                    System.out.print(matriz_entrada[i][j]+" ");
+                    //System.out.print(matriz_entrada[i][j]+" ");
             }
-             System.out.print("\n");
+             //System.out.print("\n");
          }  
          
-          System.out.println("MATRIZ[0][2] = " + matriz_entrada[0][2]);
+          //System.out.println("MATRIZ[0][2] = " + matriz_entrada[0][2]);
         
         /////////////////////////////////////////////////
         //    INICIALIZA MATRIZ COM VALORES INFINITOS  //
@@ -357,7 +361,7 @@ public class SAOptimization {
               
         
         
-        //System.out.println("INCIALIZOU MATRIZ COM INFINITO");
+        System.out.println("INCIALIZOU MATRIZ COM INFINITO");
         
         int sem_solucao = TRUE;
         while(sem_solucao == TRUE)
@@ -367,7 +371,7 @@ public class SAOptimization {
             /*****************************************************/
             p = seleciona_p_medianas(); //Seleciona randomicamente as p facilidades
             
-            System.out.println("SELECIONOU AS P-MEDIANAS");
+            //System.out.println("SELECIONOU AS P-MEDIANAS");
             /*************************************************/
             /*2) LIGA OS CLIENTES ÀS FACILIDADES MAIS PRÓXIMA*/
             /*************************************************/
@@ -379,7 +383,7 @@ public class SAOptimization {
 
                 if(!p.contains(cliente)) //Só analisa nó se este não for uma facilidade
                 {             
-                    System.out.println("Verificando cliente" + cliente);
+                    //System.out.println("Verificando cliente" + cliente);
                     //############################################################
                     //#Verifica a menor distância do cliente para cada facilidade#                  
                     //############################################################
@@ -388,11 +392,11 @@ public class SAOptimization {
                     while(itr.hasNext())
                     {
                         int facilidade = itr.next();//Seleciona uma facilidade e verifica a distancia até cliente         
-                        System.out.println("Matriz_entrada["+facilidade+"]"+"["+cliente+"]"+ " = " + matriz_entrada[facilidade][cliente]);
+                        //System.out.println("Matriz_entrada["+facilidade+"]"+"["+cliente+"]"+ " = " + matriz_entrada[facilidade][cliente]);
                         if(matriz_entrada[facilidade][cliente] < melhor_distancia_atual)//Se encontrou menor distância que a atual, atualiza
                         { //Se for melhor atualiza                        
                             melhor_solucao[facilidade][cliente] = matriz_entrada[facilidade][cliente];
-                            System.out.println("ACHOU LIGAÇÃO entre" + facilidade + " e " + cliente);
+                            //System.out.println("ACHOU LIGAÇÃO entre" + facilidade + " e " + cliente);
                             cliente_antendido = TRUE;
                         }                        
                     }
@@ -406,7 +410,7 @@ public class SAOptimization {
                 cliente++;
             }
             
-            System.out.println("VERIFICOU UM POSSÍVEL CENÁRIO");
+            //System.out.println("VERIFICOU UM POSSÍVEL CENÁRIO");
             
             /*******************************************/
             /*4) DETECTOU UMA SOLUÇÃO FACTÍVEL POSSÍVEL*/
@@ -445,22 +449,27 @@ public class SAOptimization {
         
         int[][] matriz_temp = new int[dimension][dimension];
 
+  
+        
         while(cliente<dimension && solucao == FACTIVEL)
         {
             for(int i=0; i<dimension;i++)
                 for(int j=0; j<dimension;j++)
                     matriz_temp[i][j] = matriz[i][j];
 
+              
+            
             int entra_facilidade = gerador_aleatorios.nextInt(dimension);
-
+            
             int sai_indice = gerador_aleatorios.nextInt(p.size());
-
+          
+            
             int sai_facilidade = p.get(sai_indice);
-
+            
             p.remove(sai_facilidade);
 
             p.add(entra_facilidade);
-
+                              
                 int melhor_distancia_atual = VALOR_INFINITO;
 
                 if(!p.contains(cliente)) //Só analisa nó se este não for uma facilidade
@@ -471,36 +480,45 @@ public class SAOptimization {
                     //############################################################
                     Iterator<Integer> itr = p.iterator();
 
+   
+                    
                     int cliente_antendido = FALSE;
 
                     while(itr.hasNext())
                     {
+                        
                         int facilidade = itr.next();//Seleciona uma facilidade e verifica a distancia até cliente
+
                         if(matriz_entrada[facilidade][cliente] < melhor_distancia_atual)//Se encontrou menor distância que a atual, atualiza
                         { //Se for melhor atualiza
+                            
                             matriz_temp[facilidade][cliente] = matriz_entrada[facilidade][cliente];
                             cliente_antendido = TRUE;
+                                         
                         }
-                    }
+                    }                                     
                     /*******************************/
                     /*3) DETECTA SOLUÇÃO INFACTIVEL*/
                     /*******************************/
                     if(cliente_antendido == FALSE)//Verifica se cliente foi ligado com alguma facilidade
-                    {
+                    {               
                         solucao = INFACTIVEL; //Indica que todo processo será repetido
                         
                         p.remove(entra_facilidade);
 
                         p.add(sai_facilidade);
+                           
                     }
                 }
+                
 
                 cliente++;
         }
 
+        
         for (Integer facilidade : p)
             matriz_temp[facilidade][facilidade] = 0;
-
+                 
         return matriz_temp;
     }
     
