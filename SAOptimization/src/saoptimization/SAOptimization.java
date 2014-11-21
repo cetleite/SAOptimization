@@ -32,6 +32,12 @@ public class SAOptimization {
     /**
      * @param args the command line arguments
      */
+
+    /*CONSTANTES*/
+    public static final int FALSE = 0;
+    public static final int TRUE = 1;
+    public static final int INFACTIVEL = -1;
+    public static final int FACTIVEL = 0;
     
     public static InputStream is;
     public static int dimension;
@@ -45,7 +51,7 @@ public class SAOptimization {
     public static int[][] melhor_solucao;
     public static int[][] solucao_candidata;
 
-    public static ArrayList<Integer> p;
+    public static ArrayList<Integer> p = new ArrayList();
 
     public static BufferedReader reader;
     
@@ -91,8 +97,6 @@ public class SAOptimization {
         inicializa_matriz_entrada(infile7);
         gera_arquivo_saida(file7);
         
-        System.out.println("GEROU MATRIZ E ARQUIVO DE SAIDA");
-        
         /*
         inicializa_matriz_entrada(infile1);
         gera_arquivo_saida(file1);
@@ -128,9 +132,29 @@ public class SAOptimization {
         //melhor_solucao = simulated_annealing(stop2, stop1, temperatura, resfriamento);
        
         //solucao_inicial();
-        solucao_inicial3();
+        melhor_solucao = solucao_inicialX(melhor_solucao, matriz_entrada);
         //solucao_inicial2();
-        System.out.println(funcao_avaliacao(melhor_solucao));
+/*
+        melhor_solucao = inicializa_matriz_inifinita(melhor_solucao);
+
+        printa_matriz(melhor_solucao);
+
+        p.add(0);
+        p.add(3);
+
+        melhor_solucao = liga_clientes_facilidades(melhor_solucao, matriz_entrada);
+*/
+        printa_matriz(melhor_solucao);
+
+        if(verifica_factibilidade(melhor_solucao))
+            System.out.println("factivel");
+
+        else
+            System.out.println("infactivel");
+
+
+
+        //System.out.println(funcao_avaliacao(melhor_solucao));
     }
 
     public static void solucao_inicial2()
@@ -394,12 +418,7 @@ Collections.reverse(list);*/
         2) VERIFICA SE ACHOU UMA SOLUÇÃO POSSÍVEL
         3) SE ACHOU, COLOCAR VALOR 0 NO ELEMENTO DA DIAGONAL CORRESPONETE A FACILIDADE
         */    
-                     
-        int FALSE = 0;
-        int TRUE = 1;
-        int INFACTIVEL = -1;
-        int FACTIVEL = 0;
-                 
+                    
         /////////////////////////////////////////////////
         //    INICIALIZA MATRIZ COM VALORES INFINITOS  //
         /////////////////////////////////////////////////
@@ -518,11 +537,6 @@ Collections.reverse(list);*/
         3) SE ACHOU, COLOCAR VALOR 0 NO ELEMENTO DA DIAGONAL CORRESPONETE A FACILIDADE
         */    
         //ArrayList<Integer> p = new ArrayList<Integer>();
-                     
-        int FALSE = 0;
-        int TRUE = 1;
-        int INFACTIVEL = -1;
-        int FACTIVEL = 0;
          
           System.out.println("MATRIZ[0][2] = " + matriz_entrada[0][2]);          
          //melhor_solucao[0][0] = 2;  
@@ -635,24 +649,18 @@ Collections.reverse(list);*/
     
     public static int[][] perturba_solucao(int[][] matriz)
     {
-        int FACTIVEL = 0, INFACTIVEL = -1, FALSE = 0, TRUE = 1;
-
         int solucao = FACTIVEL;
 
         int cliente = 0;
         
         int[][] matriz_temp = new int[dimension][dimension];
 
-  
-        
         while(cliente<dimension && solucao == FACTIVEL)
         {
             for(int i=0; i<dimension;i++)
                 for(int j=0; j<dimension;j++)
                     matriz_temp[i][j] = matriz[i][j];
-
-              
-            
+ 
             int entra_facilidade = gerador_aleatorios.nextInt(dimension);
             
             int sai_indice = gerador_aleatorios.nextInt(p.size());
@@ -723,13 +731,92 @@ Collections.reverse(list);*/
         return Math.exp(-(valor_candidato - valor_global)/temperatura);
     }
 
+    public static int[][] solucao_inicialX(int[][] matriz, int [][] entrada)
+    {
+        matriz = inicializa_matriz_inifinita(matriz);
+
+        boolean sem_solucao = true;
+
+        while(sem_solucao == true)
+        {
+            p = new ArrayList();
+
+            p = seleciona_p_medianas();
+
+            matriz = liga_clientes_facilidades(matriz, entrada);
+
+            if(verifica_factibilidade(matriz))
+                sem_solucao = false;
+        }
+
+        for (Integer facilidade : p)
+            matriz[facilidade][facilidade] = 0;
+
+        return matriz;
+    }
+
+    public static int[][] liga_clientes_facilidades(int[][] melhor, int[][] entrada)
+    {
+        int melhor_facilidade_atual = -1;
+
+        for(int i=0; i<dimension; i++)
+        {
+            int melhor_distancia_atual = VALOR_INFINITO;
+
+            if(!p.contains(i))
+            {
+                melhor_facilidade_atual = -1;
+
+                for (Integer j : p)
+                {
+                    if(entrada[j][i] < melhor_distancia_atual)
+                    {
+                        melhor_distancia_atual = entrada[j][i];
+
+                        melhor_facilidade_atual = j;
+                    }
+                }
+            }
+
+            if(melhor_facilidade_atual != -1)
+                melhor[melhor_facilidade_atual][i] = melhor_distancia_atual;
+        }
+
+        for (Integer facilidade : p)
+            melhor[facilidade][facilidade] = 0;
+
+        return melhor;
+    }
+
+    public static int[][] inicializa_matriz_inifinita(int[][] matriz)
+    {
+        int i, j;
+
+        for(i=0; i<dimension;i++)
+            for(j=0; j<dimension; j++)
+                matriz[i][j] = VALOR_INFINITO;
+
+        return matriz;
+    }
+
+    public static void printa_matriz(int[][] matriz)
+    {
+         for(int i=0; i<dimension; i++)
+         {
+            for(int j=0; j<dimension; j++)
+                    System.out.print(matriz[i][j]+" ");
+
+            System.out.print("\n");
+         }
+    }
+
     public static boolean verifica_factibilidade(int[][] matriz)
     {
         int contaAtendidos = facility_total;
 
         int i;
 
-        boolean reached;
+        boolean reached = false;
 
         for(i=0; i<dimension; i++)
         {
@@ -751,7 +838,10 @@ Collections.reverse(list);*/
             }
         }
 
-        return true;
+        if(reached == false)
+            return false;
+        else
+            return true;
     }
 
     public static void inicializa_matriz_entrada(File file_path) throws FileNotFoundException, IOException
