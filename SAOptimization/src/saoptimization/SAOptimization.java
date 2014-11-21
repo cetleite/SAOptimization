@@ -722,7 +722,38 @@ Collections.reverse(list);*/
         //-Lembro da professora ter falado sobe o K não fazer muita diferença e por isso poderíamos ignorar
         return Math.exp(-(valor_candidato - valor_global)/temperatura);
     }
-    
+
+    public static boolean verifica_factibilidade(int[][] matriz)
+    {
+        int contaAtendidos = facility_total;
+
+        int i;
+
+        boolean reached;
+
+        for(i=0; i<dimension; i++)
+        {
+            if(!p.contains(i))
+            {
+                reached = false;
+
+                for (Integer j : p)
+                {
+                    if(matriz[j][i] != VALOR_INFINITO)
+                    {
+                        reached = true;
+                        break;
+                    }
+                }
+
+                if(reached == false)
+                    return false;
+            }
+        }
+
+        return true;
+    }
+
     public static void inicializa_matriz_entrada(File file_path) throws FileNotFoundException, IOException
     {
         InputStream in = new FileInputStream(file_path);
