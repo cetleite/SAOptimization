@@ -14,8 +14,9 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Random;
+import java.util.Collections;
 
 import java.util.Iterator;
 import java.util.Random;
@@ -87,8 +88,8 @@ public class SAOptimization {
     public static void main(String[] args) throws IOException
     {
         /*Le matriz de entrada*/
-        inicializa_matriz_entrada(infile4);
-        gera_arquivo_saida(file4);
+        inicializa_matriz_entrada(infile7);
+        gera_arquivo_saida(file7);
         
         System.out.println("GEROU MATRIZ E ARQUIVO DE SAIDA");
         
@@ -126,10 +127,66 @@ public class SAOptimization {
 
         //melhor_solucao = simulated_annealing(stop2, stop1, temperatura, resfriamento);
        
-        solucao_inicial();
+        //solucao_inicial();
+        solucao_inicial3();
+        //solucao_inicial2();
         System.out.println(funcao_avaliacao(melhor_solucao));
     }
 
+    public static void solucao_inicial2()
+    {
+        ArrayList<Integer> nos = new ArrayList<Integer>();
+        ArrayList<Integer> pmed = new ArrayList<Integer>();
+        
+        int[][] list = new int[dimension][2];
+          
+        for(int i=0; i<dimension; i++)
+        {
+            int contador_conexoes=0;
+            for(int j=0; j<dimension; j++)
+            {
+                //Se tem uma conexão, incrementa um
+                if(matriz_entrada[i][j] < VALOR_INFINITO)
+                {
+                    contador_conexoes+=1;
+                }
+            }
+            //Adiciona o número de conexões na lista
+            list[i][0] = i;  //guarda quem é o nó responsável
+            list[i][1] = contador_conexoes; //informa quantas conexoes nó possui
+            //nos.add(contador_conexoes);            
+            
+        }
+        
+        
+    
+        for(int k =0; k<= facility_total; k++)
+        {
+            
+            
+            /*
+            //Pega valor máximo do nó atual
+            int max = Collections.max(nos);
+            System.out.println(max);
+            //Indica que já foi escolhido
+            //Adiciona nó na lista das facilidades escolhidas
+            pmed.add(nos.indexOf(max));
+            nos.set(nos.indexOf(max), -1);
+            */
+        }
+        
+      
+           for (Integer item : pmed) 
+            {   
+                //System.out.print(item + " ");
+            }
+       
+        
+        /*Collections.sort(list);
+Collections.reverse(list);*/
+    }
+    
+    
     public static void gera_arquivo_saida(File file) throws IOException
     {
         String concat="";
@@ -328,6 +385,129 @@ public class SAOptimization {
        
         
         return pmed;
+    }
+    
+    public static int[][] solucao_inicial3()
+    {
+        /*
+        1) INICIALIZA MATRIZ COM VALORES INFINITOS
+        2) VERIFICA SE ACHOU UMA SOLUÇÃO POSSÍVEL
+        3) SE ACHOU, COLOCAR VALOR 0 NO ELEMENTO DA DIAGONAL CORRESPONETE A FACILIDADE
+        */    
+                     
+        int FALSE = 0;
+        int TRUE = 1;
+        int INFACTIVEL = -1;
+        int FACTIVEL = 0;
+                 
+        /////////////////////////////////////////////////
+        //    INICIALIZA MATRIZ COM VALORES INFINITOS  //
+        /////////////////////////////////////////////////
+        //                                             //
+        for(int i=0; i<dimension;i++)
+            for(int j=0; j<dimension; j++)
+                melhor_solucao[i][j] = VALOR_INFINITO;
+        //                                             //
+        /////////////////////////////////////////////////
+              
+        
+        
+        System.out.println("INCIALIZOU MATRIZ COM INFINITO");
+        
+        int sem_solucao = TRUE;
+        while(sem_solucao == TRUE)
+        {
+            /*****************************************************/
+            /*1) SELECIONA UM CONJUNTO ALEATÓRIO DE P FACILIDADES*/
+            /*****************************************************/
+            p = seleciona_p_medianas(); //Seleciona randomicamente as p facilidades
+            
+            //System.out.println("SELECIONOU AS P-MEDIANAS");
+            /*************************************************/
+            /*2) LIGA OS CLIENTES ÀS FACILIDADES MAIS PRÓXIMA*/
+            /*************************************************/
+            int cliente = 0;
+            int solucao = FACTIVEL;            
+            while(cliente<dimension && solucao == FACTIVEL)                        
+            {                
+                int melhor_distancia_atual = VALOR_INFINITO +1; 
+
+                if(!p.contains(cliente)) //Só analisa nó se este não for uma facilidade
+                {             
+                    //System.out.println("Verificando cliente" + cliente);
+                    //############################################################
+                    //#Verifica a menor distância do cliente para cada facilidade#                  
+                    //############################################################
+                    Iterator<Integer> itr = p.iterator();
+                    int cliente_atendido = FALSE;
+                    int melhor_custo_atual = VALOR_INFINITO + 1;
+                    int melhor_facilidade_atual = -1;
+                    while(itr.hasNext())
+                    {
+                        int facilidade = itr.next();//Seleciona uma facilidade e verifica a distancia até cliente         
+                        //System.out.println("Matriz_entrada["+facilidade+"]"+"["+cliente+"]"+ " = " + matriz_entrada[facilidade][cliente]);
+                        if(matriz_entrada[facilidade][cliente] < melhor_distancia_atual)//Se encontrou menor distância que a atual, atualiza
+                        { //Se for melhor atualiza                        
+                            cliente_atendido = TRUE;
+                            melhor_facilidade_atual = facilidade;
+                            melhor_custo_atual = matriz_entrada[facilidade][cliente];
+                        }                        
+                    }
+                    /*******************************/
+                    /*3) DETECTA SOLUÇÃO INFACTIVEL*/
+                    /*******************************/
+                    if(cliente_atendido == FALSE){//Verifica se cliente foi ligado com alguma facilidade                                            
+                        solucao = INFACTIVEL; //Indica que todo processo será repetido                                      
+                 
+                        for(int i=0; i<dimension;i++)
+                             for(int j=0; j<dimension; j++)
+                                    melhor_solucao[i][j] = VALOR_INFINITO;
+                    }
+                    else if(cliente_atendido == TRUE)
+                    {
+                        melhor_solucao[melhor_facilidade_atual][cliente] = melhor_custo_atual;
+                    }
+                 }
+                
+                cliente++;
+            }
+            
+            //System.out.println("VERIFICOU UM POSSÍVEL CENÁRIO");
+            
+            /*******************************************/
+            /*4) DETECTOU UMA SOLUÇÃO FACTÍVEL POSSÍVEL*/
+            /*******************************************/
+            if(solucao == FACTIVEL)
+            {
+                System.out.println("ENCONTROU SOLUÇÃO FACTÍVEL");
+                sem_solucao = FALSE;
+            }
+        }
+        
+        //////////////////////////////////////////////
+        //    SETA ELEMENTO Xii DAS FACILIDADES = 0 //
+        //////////////////////////////////////////////
+        //                                          //
+            for (Integer facilidade : p)
+            {
+                melhor_solucao[facilidade][facilidade] = 0;
+            }
+        //                                          //
+        //////////////////////////////////////////////
+        
+            System.out.println("ATUALIZOU DIAGONAL DAS FACILIDADES");
+
+            /*
+             for(int i=0; i<dimension; i++){
+                for(int j=0; j<dimension; j++)
+            {
+                    System.out.print(melhor_solucao[i][j]+" ");
+            }                
+             System.out.print("\n");
+             }
+            
+            */
+        return melhor_solucao;
     }
     
     public static int[][] solucao_inicial()
@@ -584,6 +764,8 @@ public class SAOptimization {
                facility_total = Integer.parseInt(tokens[3]); //Aqui é 3, pois no arquivo tipo 2 o p-mediana é dado na terceira coluna
                /*Inicializa matriz com a dimensão obtida*/
                matriz_entrada = new int[dimension][dimension];
+               melhor_solucao = new int[dimension][dimension];
+               solucao_candidata = new int[dimension][dimension];
                
                
                //System.out.println(dimension);                     
