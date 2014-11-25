@@ -50,6 +50,13 @@ public class SAOptimization {
     public static int[][] matriz_entrada;    
     public static int[][] melhor_solucao;
     public static int[][] solucao_candidata;
+    
+    public static int [][] solucao_atual;
+    public static int [][] solucao_candidata2;
+    public static int CUSTO = 2;
+    public static int FACILIDADE = 1;
+    public static int NO = 0;
+    
 
     public static ArrayList<Integer> p = new ArrayList();
 
@@ -60,7 +67,7 @@ public class SAOptimization {
     public static double temperatura, resfriamento;
     
     /*Constantes extras definidas para o algoritmo*/
-    public static int VALOR_INFINITO = 99999;
+    public static int VALOR_INFINITO = 101;
     public static double CRITERIO = 0.1;
     
     /*Gerador de números aleatórios*/
@@ -94,8 +101,8 @@ public class SAOptimization {
     public static void main(String[] args) throws IOException
     {
         /*Le matriz de entrada*/
-        inicializa_matriz_entrada(infile7);
-        gera_arquivo_saida(file7);
+        inicializa_matriz_entrada(infile2);
+        gera_arquivo_saida(file2);
         
         /*
         inicializa_matriz_entrada(infile1);
@@ -131,8 +138,12 @@ public class SAOptimization {
 
         //melhor_solucao = simulated_annealing(stop2, stop1, temperatura, resfriamento);
        
-        //solucao_inicial();
-        melhor_solucao = solucao_inicialX(melhor_solucao, matriz_entrada);
+       // melhor_solucao = solucao_inicial();
+        
+        solucao_inicial4();
+        perturba_solucao2();
+        
+        //melhor_solucao = solucao_inicialX(melhor_solucao, matriz_entrada);
         //solucao_inicial2();
 /*
         melhor_solucao = inicializa_matriz_inifinita(melhor_solucao);
@@ -144,7 +155,7 @@ public class SAOptimization {
 
         melhor_solucao = liga_clientes_facilidades(melhor_solucao, matriz_entrada);
 */
-        printa_matriz(melhor_solucao);
+      /*  printa_matriz(melhor_solucao);
 
         if(verifica_factibilidade(melhor_solucao))
             System.out.println("factivel");
@@ -152,7 +163,7 @@ public class SAOptimization {
         else
             System.out.println("infactivel");
 
-
+*/
 
         //System.out.println(funcao_avaliacao(melhor_solucao));
     }
@@ -262,6 +273,199 @@ Collections.reverse(list);*/
          bw.write(linha);
          bw.write("\nend;");
          bw.close();
+    }
+    
+    
+   public static void imprime_estrutura(int[][] matriz)
+    {
+        System.out.println("");
+        
+        System.out.print("N: ");
+        for(int i=0; i<dimension; i++)
+        {
+            System.out.print(matriz[NO][i] + "\t");
+                        
+        }
+        System.out.println("");
+        
+        System.out.print("F: ");
+        for(int j=0; j<dimension; j++)
+        {
+            System.out.print(matriz[FACILIDADE][j] + "\t");
+                        
+        }
+        System.out.println("");
+        System.out.print("C: ");
+        for(int i=0; i<dimension; i++)
+        {
+            System.out.print(matriz[CUSTO][i] + "\t");
+                        
+        }
+        
+        System.out.println("");
+        System.out.println("");
+    }
+    
+    
+    public static int perturba_solucao2()
+    {
+        /*
+        1) Seleciona uma mediana random
+        2) Verifica qual é a melhor dessa mediana para todos os outros clientes
+        3) Troca com o melhor dentre as opções atuais
+        */
+        
+        Random rand = new Random();
+        int facilidade_escolhida;
+        
+                
+        //1) Seleção da meidana de forma randômica
+        facilidade_escolhida = solucao_atual[NO][rand.nextInt(facility_total)]; 
+        
+        
+        int melhor_no_atual=0;
+        int indice_melhor_no = 0;
+        int custo_melhor_troca = VALOR_INFINITO*dimension;
+        
+        
+        
+        /*COPIA INFORMAÇÃO DA SOLUÇÃO ATUAL PARA MUDAR NA CANDIDATA*/
+        for(int i=0; i<dimension; i++)
+        {
+            solucao_candidata2[NO][i] = solucao_atual[NO][i];
+            solucao_candidata2[FACILIDADE][i] = solucao_atual[FACILIDADE][i];
+            solucao_candidata2[CUSTO][i] = solucao_atual[CUSTO][i];
+        }                     
+
+        
+        //2) Para todos os nós não facilidade, verificar qual é a melhor troca (menos custosa)
+        //Para toda ligação da facilidade a ser trocada com seus clientes, verificar distância do NOVO cliente para esses outros clientes
+        for(int i=facility_total; i< dimension; i++)
+        {
+           //Verifica para cada nodo se a troca é a melhor
+           int custo_no_i = 0;
+           for(int j=facility_total; j<dimension; j++)
+           {
+               if(solucao_atual[FACILIDADE][j] == facilidade_escolhida) //Se achou um ligante
+                   custo_no_i+=matriz_entrada[solucao_atual[NO][i]][solucao_atual[NO][j]]; //Verifica o custo do nó-facilidade (candidato) até outro nó
+           }
+           custo_no_i+=matriz_entrada[i][facilidade_escolhida]; //Acrescenta valor de nó candidato até ex-facilidade
+           
+           if(custo_no_i <= custo_melhor_troca)
+           {
+               melhor_no_atual = solucao_atual[NO][i];
+               indice_melhor_no = i;
+               custo_melhor_troca = custo_no_i;
+           }
+           
+        }        
+        
+        int custo_solucao_atual = 0;
+        //3) Já encontrou melhor substituição local. Então, arrumar estrutura
+        for(int i= facility_total; i<dimension; i++)
+        {
+            if(solucao_atual[FACILIDADE][i] == facilidade_escolhida)
+            {
+                //Para todos que antiga facilidade ligava, melhor nó agora liga
+                solucao_candidata2[FACILIDADE][i] = melhor_no_atual;
+                solucao_candidata2[CUSTO][i] = matriz_entrada[melhor_no_atual][solucao_atual[NO][i]];
+                custo_solucao_atual+=     matriz_entrada[melhor_no_atual][solucao_atual[NO][i]];
+            }
+        }
+              
+        //System.out.println("Verificado");
+        
+        /*Troca de lugar a ex-facilidade pelo nó agora facilidade*/
+        int id_antiga_facilidade = busca_id_facilidade(facilidade_escolhida);          
+        
+        solucao_candidata2[NO][indice_melhor_no] = facilidade_escolhida;
+        solucao_candidata2[FACILIDADE][indice_melhor_no] = melhor_no_atual;
+        solucao_candidata2[CUSTO][indice_melhor_no] = matriz_entrada[melhor_no_atual][facilidade_escolhida];
+         custo_solucao_atual+= matriz_entrada[melhor_no_atual][facilidade_escolhida];                    
+        
+        solucao_candidata2[NO][id_antiga_facilidade] = melhor_no_atual;
+        solucao_candidata2[FACILIDADE][id_antiga_facilidade] = melhor_no_atual;
+        solucao_candidata2[CUSTO][id_antiga_facilidade] = 0;
+        
+         // System.out.println("Melhor no atual: " + melhor_no_atual);
+                 
+        //System.out.println("NOVO CUSTO: " + custo_solucao_atual);
+        
+        System.out.println("");
+        System.out.print("SOLUCAO PERTURBADA: ");
+        
+        imprime_estrutura(solucao_candidata2);
+        
+        return custo_solucao_atual;
+    }
+    
+    public static void simualted_annealing2(int stop2, int stop1, double temperatura, double resfriamento)
+    {
+        
+        int melhor_valor_global = VALOR_INFINITO;
+        int valor_perturbacao;
+        int i,j;
+       
+        //1) Gera solução inicial e obtem custo dessa solução
+        melhor_valor_global = solucao_inicial4();
+        
+        System.out.println("ENCONTROU SOLUÇÃO INICIAL!");
+   
+        
+        /*Inicia laço do algoritmo*/
+        //////////////////////
+        //repeat STOP2 vezes//
+        //////////////////////
+        for(i=0; i<stop2; i++)
+        {
+            //////////////////////
+            //repeat STOP1 vezes//
+            //////////////////////
+            for(j=0; j<stop1; j++)
+            {
+                //3) Perturba melhor solução atual      
+                
+                ///////////////////////////////////////////////////
+                //seleciona s '∈ N (s) que ainda não foi visitado//
+                ///////////////////////////////////////////////////
+                valor_perturbacao = perturba_solucao2();
+                
+                System.out.println("PERTURBOU SOLUÇÃO!");
+                
+                ////////////////////////
+                //if f(s') ≤ f(s) then//
+                ////////////////////////
+                if(valor_perturbacao >= melhor_valor_global)
+                {
+                    //////////
+                    //s:= s'//
+                    //////////
+                    
+                    //Se gerou, atualiza solução global atual
+                    solucao_atual = solucao_candidata2;
+                    melhor_valor_global =  valor_perturbacao;
+                }
+                //6) Se não for melhor, analisa a probabilidade e ve se muda ou nao
+                else
+                {
+                    ////////////////////////////////////////////////////
+                    //Com probabilidade e^[−(f(s')−f(s))/kT] : s := s'//
+                    ////////////////////////////////////////////////////
+
+                    //7) Se probabilidade estiver dentro de algum critério, alterar solução mesmo não sendo a melhor
+                    if(probabilidade_de_saltos(valor_perturbacao, melhor_valor_global, temperatura)> Math.random()*(1-0)+0)
+                    {                        
+                      solucao_atual = solucao_candidata2;
+                      melhor_valor_global = valor_perturbacao;
+                    }    
+                }
+            }
+            //////////////
+            //T := T × r//
+            //////////////
+            temperatura = temperatura * resfriamento;
+        }
+
     }
     
     public static int[][] simulated_annealing(int stop2, int stop1, double temperatura, double resfriamento)
@@ -550,7 +754,7 @@ Collections.reverse(list);*/
                 melhor_solucao[i][j] = VALOR_INFINITO;
         //                                             //
         /////////////////////////////////////////////////
-              
+         
         
         
         System.out.println("INCIALIZOU MATRIZ COM INFINITO");
@@ -647,6 +851,115 @@ Collections.reverse(list);*/
         return melhor_solucao;
     }
     
+    /*Função retorna em qual posição do vetor solucao_atual está a facilidade */
+    public static int busca_id_facilidade(int facilidade)
+    {
+        System.out.println("Buscando por: " + facilidade);
+        //System.out.print("P-MEDIANAS: ");
+        
+        
+        for(int i=0; i<facility_total; i++)
+        {
+            System.out.print(solucao_atual[0][i] + " ");
+            if(solucao_atual[NO][i] == facilidade)
+            {
+             //System.out.println("ENCONTROU!!");
+                return i; //retorno id
+            }
+        }
+        
+        return -1;
+    }
+    
+    public static int solucao_inicial4()
+    {
+        int custo_solucao_inicial = 0;
+        /*Inicializa matriz com infinito*/
+        for(int i =0; i<dimension; i++)
+        {
+            solucao_atual[NO][i] = VALOR_INFINITO;
+            solucao_atual[FACILIDADE][i] = i;
+            solucao_atual[CUSTO][i] = VALOR_INFINITO;
+        }
+        
+        
+        
+        
+            p = seleciona_p_medianas(); //P contem a lista do id adas facilidades
+            
+            /*Preenche posição das medianas*/
+            int ind=0;
+            for (Integer facilidade : p) //Para cada facilidade
+                {
+                    solucao_atual[NO][ind]=facilidade; //Coloca no local das facilidades da solução atual
+                    solucao_atual[FACILIDADE][ind]=facilidade; //A facilidade é atendida por ela mesma
+                    solucao_atual[CUSTO][ind]=0;          //Custo de se atender a facilidade = 0
+                    ind++;
+                }          
+            
+            /*Preenche o restante do nodos na estrutura*/
+            for(int i=0; i<dimension; i++)
+            {
+                //Se não for uma facilidade colocar no espaço correto dos clientes!
+                if(!p.contains(i))
+                {                  
+                    Iterator<Integer> itr = p.iterator();
+                    int melhor_facilidade_posicao=-1;
+                    int melhor_custo_atual = VALOR_INFINITO+1;   
+                    
+                    /*VERIFICA PARA TODAS AS FACILIDADES QUAL A MIS PRÓXIMA!*/
+                    while(itr.hasNext())
+                    {
+                        
+                        int facilidade = itr.next();//Seleciona uma facilidade e verifica a distancia até cliente                                 
+
+                        //System.out.println("Matriz_entrada["+facilidade+"]"+"["+cliente+"]"+ " = " + matriz_entrada[facilidade][cliente]);
+                        //System.out.println("Facilidade => " + facilidade);
+                        if(matriz_entrada[facilidade][i] < melhor_custo_atual)//Se encontrou menor distância que a atual, atualiza
+                        { //Se for melhor atualiza                        
+                            
+                             System.out.println("Facilidade sendo pesquisada: " + facilidade);
+                           melhor_facilidade_posicao = busca_id_facilidade(facilidade); 
+                                                     
+                           
+                           melhor_custo_atual = matriz_entrada[facilidade][i];
+                           
+                            System.out.println("Melhor facilidade: " + melhor_facilidade_posicao);
+                           
+                           if(melhor_facilidade_posicao < 0)
+                               System.out.println("Erro no algoritmo!!!\n");
+                        }                        
+                    }
+                    
+                    /*AQUI JÁ VAI TER QUAL FACILIDADE É A MAIS PRÓXIMA*/
+                    solucao_atual[NO][ind]= i;  //Salva qual id do nó
+                    solucao_atual[FACILIDADE][ind] = solucao_atual[NO][melhor_facilidade_posicao]; //Qual a facilidade mais próxima do nó
+                    solucao_atual[CUSTO][ind] = melhor_custo_atual; //Qual o custo da facilidade ao nó                     
+                    custo_solucao_inicial+=melhor_custo_atual;
+                    
+                 ind++;   
+                }               
+                
+            }
+
+/*            
+         for(int i=0; i<dimension; i++)
+         {
+             System.out.println("NO: " + solucao_atual[NO][i] + " , FACILIDADE: " + solucao_atual[FACILIDADE][i]+ " , CUSTO: " + solucao_atual[CUSTO][i]);
+             
+         }
+            
+            
+         System.out.println("CUSTO INICIAL: " + custo_solucao_inicial);
+ */
+            System.out.println("");
+            System.out.println("SOOLUCAO ATUAL: ");
+            imprime_estrutura(solucao_atual);
+            
+        return custo_solucao_inicial;        
+             
+    }
+    
     public static int[][] perturba_solucao(int[][] matriz)
     {
         int solucao = FACTIVEL;
@@ -733,6 +1046,8 @@ Collections.reverse(list);*/
 
     public static int[][] solucao_inicialX(int[][] matriz, int [][] entrada)
     {
+        System.out.println("Iniciando busca pela solução inicial");
+        
         matriz = inicializa_matriz_inifinita(matriz);
 
         boolean sem_solucao = true;
@@ -865,8 +1180,10 @@ Collections.reverse(list);*/
                facility_total = Integer.parseInt(tokens[2]);
                /*Inicializa matriz com a dimensão obtida*/
                matriz_entrada = new int[dimension][dimension];
-               melhor_solucao = new int[dimension][dimension];
+               melhor_solucao = new int[dimension][dimension];               
                solucao_candidata = new int[dimension][dimension];
+               solucao_atual = new int [3][dimension];
+               solucao_candidata2 = new int [3][dimension];
                reader.readLine(); //Pula " Facility, Client, Transportation Cost"
                                                  
                
@@ -886,7 +1203,9 @@ Collections.reverse(list);*/
                /*Inicializa matriz com a dimensão obtida*/
                matriz_entrada = new int[dimension][dimension];
                melhor_solucao = new int[dimension][dimension];
+               solucao_atual = new int [3][dimension];
                solucao_candidata = new int[dimension][dimension];
+               solucao_candidata2 = new int [3][dimension];
                
                
                //System.out.println(dimension);                     
