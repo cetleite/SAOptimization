@@ -101,8 +101,8 @@ public class SAOptimization {
     public static void main(String[] args) throws IOException
     {
         /*Le matriz de entrada*/
-        inicializa_matriz_entrada(infile2);
-        gera_arquivo_saida(file2);
+        inicializa_matriz_entrada(infile1);
+        gera_arquivo_saida(file1);
         
         /*
         inicializa_matriz_entrada(infile1);
@@ -132,16 +132,17 @@ public class SAOptimization {
         /*Simulated Annealing*/
         
         stop1 = 10;
-        stop2 = 10;
+        stop2 = 1;
         temperatura = 10.0;
         resfriamento = 0.4; //Valor [0,1]
 
-        //melhor_solucao = simulated_annealing(stop2, stop1, temperatura, resfriamento);
-       
-       // melhor_solucao = solucao_inicial();
+
+ 
         
-        solucao_inicial4();
-        perturba_solucao2();
+        //int custo_anterior = solucao_inicial4();
+        //perturba_solucao2(custo_anterior);
+        simulated_annealing2(stop2, stop1, temperatura, resfriamento);
+        
         
         //melhor_solucao = solucao_inicialX(melhor_solucao, matriz_entrada);
         //solucao_inicial2();
@@ -276,7 +277,7 @@ Collections.reverse(list);*/
     }
     
     
-   public static void imprime_estrutura(int[][] matriz)
+   public static void imprime_estrutura(int[][] matriz, int custo)
     {
         System.out.println("");
         
@@ -303,11 +304,12 @@ Collections.reverse(list);*/
         }
         
         System.out.println("");
+        System.out.println("CUSTO: " + custo);
         System.out.println("");
     }
     
     
-    public static int perturba_solucao2()
+    public static int perturba_solucao2(int custo_anterior)
     {
         /*
         1) Seleciona uma mediana random
@@ -327,7 +329,7 @@ Collections.reverse(list);*/
         int indice_melhor_no = 0;
         int custo_melhor_troca = VALOR_INFINITO*dimension;
         
-        
+        int custo_ligacao_antiga = 0;
         
         /*COPIA INFORMAÇÃO DA SOLUÇÃO ATUAL PARA MUDAR NA CANDIDATA*/
         for(int i=0; i<dimension; i++)
@@ -366,10 +368,15 @@ Collections.reverse(list);*/
         {
             if(solucao_atual[FACILIDADE][i] == facilidade_escolhida)
             {
+                //Salva o custo anterior das ligações para atualizar valor no final
+                custo_ligacao_antiga+= solucao_candidata2[CUSTO][i];
+                
                 //Para todos que antiga facilidade ligava, melhor nó agora liga
                 solucao_candidata2[FACILIDADE][i] = melhor_no_atual;
                 solucao_candidata2[CUSTO][i] = matriz_entrada[melhor_no_atual][solucao_atual[NO][i]];
                 custo_solucao_atual+=     matriz_entrada[melhor_no_atual][solucao_atual[NO][i]];
+                
+                
             }
         }
               
@@ -393,31 +400,38 @@ Collections.reverse(list);*/
         
         System.out.println("");
         System.out.print("SOLUCAO PERTURBADA: ");
+                
         
-        imprime_estrutura(solucao_candidata2);
+        /*CÁLCULO DO NOVO CUSTO DA SOLUÇÃO*/
+        custo_solucao_atual = custo_anterior - custo_ligacao_antiga + custo_solucao_atual;
+        
+        imprime_estrutura(solucao_candidata2, custo_solucao_atual);
         
         return custo_solucao_atual;
     }
     
-    public static void simualted_annealing2(int stop2, int stop1, double temperatura, double resfriamento)
+    public static void simulated_annealing2(int stop2, int stop1, double temperatura, double resfriamento)
     {
         
-        int melhor_valor_global = VALOR_INFINITO;
+        int melhor_valor_global = VALOR_INFINITO*dimension;
         int valor_perturbacao;
         int i,j;
-       
+        //Começa a contar o tempo
+        long startTime = System.currentTimeMillis();
+        
+        
         //1) Gera solução inicial e obtem custo dessa solução
         melhor_valor_global = solucao_inicial4();
         
         System.out.println("ENCONTROU SOLUÇÃO INICIAL!");
-   
-        
+           
         /*Inicia laço do algoritmo*/
         //////////////////////
         //repeat STOP2 vezes//
         //////////////////////
-        for(i=0; i<stop2; i++)
+        while(System.currentTimeMillis() - startTime < stop2*60000)
         {
+            
             //////////////////////
             //repeat STOP1 vezes//
             //////////////////////
@@ -428,7 +442,7 @@ Collections.reverse(list);*/
                 ///////////////////////////////////////////////////
                 //seleciona s '∈ N (s) que ainda não foi visitado//
                 ///////////////////////////////////////////////////
-                valor_perturbacao = perturba_solucao2();
+                valor_perturbacao = perturba_solucao2(melhor_valor_global);
                 
                 System.out.println("PERTURBOU SOLUÇÃO!");
                 
@@ -954,7 +968,7 @@ Collections.reverse(list);*/
  */
             System.out.println("");
             System.out.println("SOOLUCAO ATUAL: ");
-            imprime_estrutura(solucao_atual);
+            imprime_estrutura(solucao_atual, custo_solucao_inicial);
             
         return custo_solucao_inicial;        
              
