@@ -24,6 +24,6 @@ s.t. yigualx{i in A, j in A}: 	#se em j existe uma facilidade
 	x[i, j] <= y[i];
 
 s.t. facilidades_instaladas: 	#se foram instaladas exatas 'p' facilidades
-	sum{j in A} y[i] = p;
+	sum{i in A} y[i] = p;
 
 end;
