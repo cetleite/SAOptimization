@@ -59,6 +59,7 @@ public class SAOptimization {
     
 
     public static ArrayList<Integer> p = new ArrayList();
+    public static ArrayList <Integer> pmed = new ArrayList<Integer>();   
 
     public static BufferedReader reader;
     
@@ -73,8 +74,8 @@ public class SAOptimization {
     /*Gerador de números aleatórios*/
     public static Random gerador_aleatorios;
 
-    //public static File file1 = new File("ogapA332.txt");
-    public static File file1 = new File("testeee.txt");
+    public static File file1 = new File("ogapA332.txt");
+    //public static File file1 = new File("testeee.txt");
     public static File file2 = new File("ogapA1232.txt");
     public static File file3 = new File("ogapB331.txt");
     public static File file4 = new File("ogapB1131.txt");
@@ -85,8 +86,8 @@ public class SAOptimization {
     public static File file9 = new File("opmed20.txt");
     public static File file10 = new File("opmed40.txt");
     
-    //public static File infile1 = new File("332PM_GapA.txt");
-    public static File infile1 = new File("inaaa.txt");
+    public static File infile1 = new File("332PM_GapA.txt");
+    //public static File infile1 = new File("inaaa.txt");
     public static File infile2 = new File("1232PM_GapA.txt");
     public static File infile3 = new File("331PM_GapB.txt");
     public static File infile4 = new File("1131PM_GapB.txt");
@@ -101,10 +102,10 @@ public class SAOptimization {
     public static void main(String[] args) throws IOException
     {
         /*Le matriz de entrada*/
-        inicializa_matriz_entrada(infile2);
-        gera_arquivo_saida(file2);
+        inicializa_matriz_entrada(infile1);
+        gera_arquivo_saida(file1);
         
-        /*
+     /*   
         inicializa_matriz_entrada(infile1);
         gera_arquivo_saida(file1);
         inicializa_matriz_entrada(infile2);
@@ -132,9 +133,9 @@ public class SAOptimization {
         /*Simulated Annealing*/
         
         stop1 = dimension*dimension;
-        stop2 = 1;
-        temperatura = 1000000.0;
-        resfriamento = 0.0001; //Valor [0,1]
+        stop2 = 30;
+        temperatura = 1000.0;
+        resfriamento = 0.719; //Valor [0,1]
 
 
  
@@ -442,6 +443,108 @@ Collections.reverse(list);*/
         return custo_solucao_atual;
     }
     
+    public static int busca_id_facilidade_shuffle(int facilidade)
+    {
+        //System.out.println("Buscando por: " + facilidade);
+        //System.out.print("P-MEDIANAS: ");
+        
+        
+        for(int i=0; i<facility_total; i++)
+        {
+            //System.out.print(solucao_atual[0][i] + " ");
+            if(solucao_candidata2[NO][i] == facilidade)
+            {
+             //System.out.println("ENCONTROU!!");
+                return i; //retorno id
+            }
+        }
+        
+        return -1;
+    }
+    
+    public static int shuffle()
+    {
+        int custo_solucao_inicial = 0;
+        /*Inicializa matriz com infinito*/
+        for(int i =0; i<dimension; i++)
+        {
+            solucao_candidata2[NO][i] = VALOR_INFINITO;
+            solucao_candidata2[FACILIDADE][i] = i;
+            solucao_candidata2[CUSTO][i] = VALOR_INFINITO;
+        }
+                      
+            pmed.clear();
+            pmed = seleciona_p_medianas(); //P contem a lista do id adas facilidades
+            
+            /*Preenche posição das medianas*/
+            int ind=0;
+            for (Integer facilidade : pmed) //Para cada facilidade
+                {
+                    solucao_candidata2[NO][ind]=facilidade; //Coloca no local das facilidades da solução atual
+                    solucao_candidata2[FACILIDADE][ind]=facilidade; //A facilidade é atendida por ela mesma
+                    solucao_candidata2[CUSTO][ind]=0;          //Custo de se atender a facilidade = 0
+                    ind++;
+                    
+                    //System.out.print(facilidade + " ");
+                    
+                }   
+            
+           
+            
+            /*Preenche o restante do nodos na estrutura*/
+            for(int i=0; i<dimension; i++)
+            {
+                //Se não for uma facilidade colocar no espaço correto dos clientes!
+                if(!pmed.contains(i))
+                {                  
+                    Iterator<Integer> itr = pmed.iterator();
+                    int melhor_facilidade_posicao=-1;
+                    int melhor_custo_atual = VALOR_INFINITO+1;   
+                    
+                   
+                    /*VERIFICA PARA TODAS AS FACILIDADES QUAL A MIS PRÓXIMA!*/
+                    while(itr.hasNext())
+                    {
+                        
+                        int facilidade = itr.next();//Seleciona uma facilidade e verifica a distancia até cliente                                 
+
+                        //System.out.println("Matriz_entrada["+facilidade+"]"+"["+cliente+"]"+ " = " + matriz_entrada[facilidade][cliente]);
+                        //System.out.println("Facilidade => " + facilidade);
+                        if(matriz_entrada[facilidade][i] < melhor_custo_atual)//Se encontrou menor distância que a atual, atualiza
+                        { //Se for melhor atualiza                        
+                            
+                           //System.out.println("Facilidade sendo pesquisada: " + facilidade);
+                           melhor_facilidade_posicao = busca_id_facilidade_shuffle(facilidade); 
+                                                     
+                           
+                           melhor_custo_atual = matriz_entrada[facilidade][i];
+                           
+                            //System.out.println("Melhor facilidade: " + melhor_facilidade_posicao);
+                           
+                           if(melhor_facilidade_posicao < 0)
+                               System.out.println("Erro no algoritmo!!!\n");
+                        }                        
+                    }
+                    
+                 
+                    
+                    /*AQUI JÁ VAI TER QUAL FACILIDADE É A MAIS PRÓXIMA*/
+                    solucao_candidata2[NO][ind]= i;  //Salva qual id do nó
+                    solucao_candidata2[FACILIDADE][ind] =  solucao_candidata2[NO][melhor_facilidade_posicao]; //Qual a facilidade mais próxima do nó
+                    solucao_candidata2[CUSTO][ind] = melhor_custo_atual; //Qual o custo da facilidade ao nó                     
+                    custo_solucao_inicial+=melhor_custo_atual;
+                    
+                 ind++;   
+                }               
+                
+            }
+        
+            
+           
+        
+        return custo_solucao_inicial;
+    }
+    
     public static void simulated_annealing2(int stop2, int stop1, double temperatura, double resfriamento)
     {
         
@@ -450,7 +553,7 @@ Collections.reverse(list);*/
         
         //1) Gera solução inicial e obtem custo dessa solução
         int melhor_valor_global = solucao_inicial4();
-           
+        int shuffle = 0;
         /*Inicia laço do algoritmo*/
         //////////////////////
         //repeat STOP2 vezes//
@@ -471,7 +574,13 @@ Collections.reverse(list);*/
                 ///////////////////////////////////////////////////
                 //seleciona s '∈ N (s) que ainda não foi visitado//
                 ///////////////////////////////////////////////////
-                valor_perturbacao = perturba_solucao2(melhor_valor_global);                               
+                if(shuffle ==1)
+                {
+                   valor_perturbacao = shuffle();  
+                   shuffle = 0;
+                }
+                else
+                     valor_perturbacao = perturba_solucao2(melhor_valor_global);  
                 
                 ////////////////////////
                 //if f(s') ≤ f(s) then//
@@ -505,7 +614,7 @@ Collections.reverse(list);*/
             //T := T × r//
             //////////////
             temperatura = temperatura * resfriamento;
-                  
+            shuffle = 1;    
         }
         
        
@@ -630,7 +739,7 @@ Collections.reverse(list);*/
         int i;
         int facility;
         
-       ArrayList <Integer> pmed = new ArrayList<Integer>();
+      // ArrayList <Integer> pmed = new ArrayList<Integer>();
         
         for(i=0; i<facility_total; i++)
         {
@@ -962,13 +1071,13 @@ Collections.reverse(list);*/
                         if(matriz_entrada[facilidade][i] < melhor_custo_atual)//Se encontrou menor distância que a atual, atualiza
                         { //Se for melhor atualiza                        
                             
-                             System.out.println("Facilidade sendo pesquisada: " + facilidade);
+                             //System.out.println("Facilidade sendo pesquisada: " + facilidade);
                            melhor_facilidade_posicao = busca_id_facilidade(facilidade); 
                                                      
                            
                            melhor_custo_atual = matriz_entrada[facilidade][i];
                            
-                            System.out.println("Melhor facilidade: " + melhor_facilidade_posicao);
+                            //System.out.println("Melhor facilidade: " + melhor_facilidade_posicao);
                            
                            if(melhor_facilidade_posicao < 0)
                                System.out.println("Erro no algoritmo!!!\n");
@@ -1274,7 +1383,7 @@ Collections.reverse(list);*/
              {
                  //Coloca diagonal = 0
                  if(j==i)
-                    matriz_entrada[i][j] = 0;
+                    matriz_entrada[i][j] = VALOR_INFINITO;
                  else
                     matriz_entrada[i][j] = VALOR_INFINITO;
              }         
