@@ -31,9 +31,18 @@ public class SAOptimization {
     /*CONSTANTES*/
     public static final int FALSE = 0;
     public static final int TRUE = 1;
+    
     public static final int INFACTIVEL = -1;
     public static final int FACTIVEL = 0;
     
+    public static final int CUSTO = 2;
+    public static final int FACILIDADE = 1;
+    public static final int NO = 0;
+    
+    public static final int VALOR_INFINITO = 101;
+    public static final double CRITERIO = 0.1;
+    
+    /*ATRIBUTOS*/    
     public static InputStream is;
     public static int dimension;
     public static int facility_total;
@@ -47,24 +56,16 @@ public class SAOptimization {
     public static int[][] solucao_candidata;
     
     public static int [][] solucao_atual;
-    public static int [][] solucao_candidata2;
-    public static int CUSTO = 2;
-    public static int FACILIDADE = 1;
-    public static int NO = 0;
-    
+    public static int [][] solucao_candidata2;    
 
-    public static ArrayList<Integer> p = new ArrayList<Integer>();
-    public static ArrayList <Integer> pmed = new ArrayList<Integer>();   
+    public static ArrayList<Integer> p;
+    public static ArrayList <Integer> pmed;   
 
     public static BufferedReader reader;
     
     /*Variáveis para entrada do algoritmo*/
     public static int stop1, stop2;
     public static double temperatura, resfriamento;
-    
-    /*Constantes extras definidas para o algoritmo*/
-    public static int VALOR_INFINITO = 101;
-    public static double CRITERIO = 0.1;
     
     /*Gerador de números aleatórios*/
     public static Random gerador_aleatorios;
@@ -95,11 +96,7 @@ public class SAOptimization {
 
 
     public static void main(String[] args) throws IOException
-    {
-        /*Le matriz de entrada*/
-        inicializa_matriz_entrada(infile1);
-        gera_arquivo_saida(file1);
-        
+    {        
      /*   
         inicializa_matriz_entrada(infile1);
         gera_arquivo_saida(file1);
@@ -125,44 +122,42 @@ public class SAOptimization {
 
         gerador_aleatorios = new Random();
         
-        /*Simulated Annealing*/
+        ArrayList<Integer> resultados = new ArrayList<Integer>();
         
-        stop1 = dimension*dimension;
-        stop2 = 60;
-        temperatura = 20.0;
-        resfriamento = 0.9999; //Valor (0,1)
-
-
- 
+        for(int o=0;o<5;o++)
+        {
+            p = new ArrayList<Integer>();
+            pmed = new ArrayList<Integer>();   
+             
+	        /*Le matriz de entrada*/
+	        inicializa_matriz_entrada(infile2);
+	        gera_arquivo_saida(file2);
+	        
+	        /*Simulated Annealing*/
+	                
+	        stop1 = dimension*dimension;
+	        stop2 = 120;
+	        temperatura = 20.0;
+	        resfriamento = 0.9999; //Valor (0,1)
+	        
+	        //int custo_anterior = solucao_inicial4();
+	        //perturba_solucao2(custo_anterior);
+	        int res = simulated_annealing(stop2, stop1, temperatura, resfriamento);
+	        
+	        resultados.add(res);
+        }
         
-        //int custo_anterior = solucao_inicial4();
-        //perturba_solucao2(custo_anterior);
-        simulated_annealing(stop2, stop1, temperatura, resfriamento);
+        int total = 0;
         
+        for(int o=0;o<5;o++)
+        {
+        	total+=resultados.get(o);
+        	System.out.println("Resultado " + o + ": " + resultados.get(o));
+        }
         
-        //melhor_solucao = solucao_inicialX(melhor_solucao, matriz_entrada);
-        //solucao_inicial2();
-/*
-        melhor_solucao = inicializa_matriz_inifinita(melhor_solucao);
-
-        printa_matriz(melhor_solucao);
-
-        p.add(0);
-        p.add(3);
-
-        melhor_solucao = liga_clientes_facilidades(melhor_solucao, matriz_entrada);
-*/
-      /*  printa_matriz(melhor_solucao);
-
-        if(verifica_factibilidade(melhor_solucao))
-            System.out.println("factivel");
-
-        else
-            System.out.println("infactivel");
-
-*/
-
-        //System.out.println(funcao_avaliacao(melhor_solucao));
+        float media = (float) (total/5.0);
+        
+        System.out.println("Media = " + media);
     }
 
     public static void gera_arquivo_saida(File file) throws IOException
@@ -425,10 +420,7 @@ public class SAOptimization {
                     ind++;
                     
                     //System.out.print(facilidade + " ");
-                    
                 }   
-            
-           
             
             /*Preenche o restante do nodos na estrutura*/
             for(int i=0; i<dimension; i++)
@@ -461,7 +453,7 @@ public class SAOptimization {
                             //System.out.println("Melhor facilidade: " + melhor_facilidade_posicao);
                            
                            if(melhor_facilidade_posicao < 0)
-                               System.out.println("Erro no algoritmo!!!\n");
+                               System.out.println("Erro no algoritmo!!!\n" + melhor_facilidade_posicao);
                         }                        
                     }
                     
@@ -484,12 +476,10 @@ public class SAOptimization {
         return custo_solucao_inicial;
     }
     
-    public static void simulated_annealing(int stop2, int stop1, double temperatura, double resfriamento)
+    public static int simulated_annealing(int stop2, int stop1, double temperatura, double resfriamento)
     {
         
         int valor_perturbacao;
-        int melhorou = 0;
-        
         //1) Gera solução inicial e obtem custo dessa solução
         int melhor_valor_global = solucao_inicial();
         int shuffle = 0;
@@ -534,7 +524,6 @@ public class SAOptimization {
                     
                     //Se gerou, atualiza solução global atual
                     atualiza_solucao(temperatura);
-                    melhorou = 1;
                     melhor_valor_global =  valor_perturbacao;
                 }
                 //6) Se não for melhor, analisa a probabilidade e ve se muda ou nao
@@ -548,7 +537,6 @@ public class SAOptimization {
                     if(probabilidade_de_saltos(valor_perturbacao, melhor_valor_global, temperatura)> Math.random()*(1-0)+0)
                     {                                         
                       atualiza_solucao(temperatura);
-                      melhorou = 1;
                       melhor_valor_global = valor_perturbacao;
                     }    
                 }
@@ -560,7 +548,7 @@ public class SAOptimization {
             shuffle = 1;    
         }
         
-       
+        return melhor_valor_global;
 
     }
     
@@ -568,7 +556,6 @@ public class SAOptimization {
     {
         /*
             Percorre matriz calculando o custo total
-            se diagonal = 0, é uma facilidade
         */  
         int i, j;
         
@@ -664,10 +651,7 @@ public class SAOptimization {
             solucao_atual[FACILIDADE][i] = i;
             solucao_atual[CUSTO][i] = VALOR_INFINITO;
         }
-        
-        
-        
-        
+
             p = seleciona_p_medianas(); //P contem a lista do id adas facilidades
             
             /*Preenche posição das medianas*/
@@ -710,7 +694,7 @@ public class SAOptimization {
                             //System.out.println("Melhor facilidade: " + melhor_facilidade_posicao);
                            
                            if(melhor_facilidade_posicao < 0)
-                               System.out.println("Erro no algoritmo!!!\n");
+                               System.out.println("Erro no algoritmo!!!\n" + melhor_facilidade_posicao);
                         }                        
                     }
                     
@@ -719,7 +703,7 @@ public class SAOptimization {
                     solucao_atual[FACILIDADE][ind] = solucao_atual[NO][melhor_facilidade_posicao]; //Qual a facilidade mais próxima do nó
                     solucao_atual[CUSTO][ind] = melhor_custo_atual; //Qual o custo da facilidade ao nó                     
                     custo_solucao_inicial+=melhor_custo_atual;
-                    
+
                  ind++;   
                 }               
                 
