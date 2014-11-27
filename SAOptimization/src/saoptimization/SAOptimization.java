@@ -133,9 +133,9 @@ public class SAOptimization {
         /*Simulated Annealing*/
         
         stop1 = dimension*dimension;
-        stop2 = 30;
-        temperatura = 1000.0;
-        resfriamento = 0.719; //Valor [0,1]
+        stop2 = 60;
+        temperatura = 100.0;
+        resfriamento = 0.908; //Valor [0,1]
 
 
  
@@ -309,7 +309,7 @@ Collections.reverse(list);*/
         System.out.println("");
     }
    
-   public static void atualiza_solucao()
+   public static void atualiza_solucao(double temperatura)
    {
         /*COPIA INFORMAÇÃO DA SOLUÇÃO ATUAL PARA MUDAR NA CANDIDATA*/
        int custo=0;
@@ -322,7 +322,7 @@ Collections.reverse(list);*/
         
         }   
         System.out.println("");
-        System.out.println("CUSTO NOVO: " + custo);
+        System.out.println("CUSTO NOVO: " + custo + "\t" + "T: " + temperatura);
        // imprime_estrutura(solucao_candidata2, custo);
 
    }
@@ -549,7 +549,7 @@ Collections.reverse(list);*/
     {
         
         int valor_perturbacao;
-       
+        int melhorou = 0;
         
         //1) Gera solução inicial e obtem custo dessa solução
         int melhor_valor_global = solucao_inicial4();
@@ -574,9 +574,9 @@ Collections.reverse(list);*/
                 ///////////////////////////////////////////////////
                 //seleciona s '∈ N (s) que ainda não foi visitado//
                 ///////////////////////////////////////////////////
-                if(shuffle ==1)
+                if(shuffle ==1 || melhorou == 0)
                 {
-                   valor_perturbacao = shuffle();  
+                   valor_perturbacao = shuffle();                    
                    shuffle = 0;
                 }
                 else
@@ -592,7 +592,8 @@ Collections.reverse(list);*/
                     //////////
                     
                     //Se gerou, atualiza solução global atual
-                    atualiza_solucao();
+                    atualiza_solucao(temperatura);
+                    melhorou = 1;
                     melhor_valor_global =  valor_perturbacao;
                 }
                 //6) Se não for melhor, analisa a probabilidade e ve se muda ou nao
@@ -605,7 +606,8 @@ Collections.reverse(list);*/
                     //7) Se probabilidade estiver dentro de algum critério, alterar solução mesmo não sendo a melhor
                     if(probabilidade_de_saltos(valor_perturbacao, melhor_valor_global, temperatura)> Math.random()*(1-0)+0)
                     {                                         
-                      atualiza_solucao();
+                      atualiza_solucao(temperatura);
+                      melhorou = 1;
                       melhor_valor_global = valor_perturbacao;
                     }    
                 }
@@ -1060,7 +1062,7 @@ Collections.reverse(list);*/
                     int melhor_facilidade_posicao=-1;
                     int melhor_custo_atual = VALOR_INFINITO+1;   
                     
-                    /*VERIFICA PARA TODAS AS FACILIDADES QUAL A MIS PRÓXIMA!*/
+                    /*VERIFICA PARA TODAS AS FACILIDADES QUAL A MAIS PRÓXIMA!*/
                     while(itr.hasNext())
                     {
                         
