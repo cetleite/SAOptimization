@@ -134,8 +134,8 @@ public class SAOptimization {
         
         stop1 = dimension*dimension;
         stop2 = 60;
-        temperatura = 100.0;
-        resfriamento = 0.908; //Valor [0,1]
+        temperatura = 20.0;
+        resfriamento = 0.9999; //Valor (0,1)
 
 
  
@@ -574,7 +574,9 @@ Collections.reverse(list);*/
                 ///////////////////////////////////////////////////
                 //seleciona s '∈ N (s) que ainda não foi visitado//
                 ///////////////////////////////////////////////////
-                if(shuffle ==1 || melhorou == 0)
+                //if(shuffle ==1 || melhorou == 0)
+                //if(melhorou == 0)
+                if(shuffle == 1)
                 {
                    valor_perturbacao = shuffle();                    
                    shuffle = 0;
