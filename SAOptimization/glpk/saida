@@ -1,0 +1,79 @@
+Problem:    model
+Rows:       22
+Columns:    16 (16 integer, 16 binary)
+Non-zeros:  56
+Status:     INTEGER OPTIMAL
+Objective:  custoTotal = 10 (MINimum)
+
+   No.   Row name        Activity     Lower bound   Upper bound
+------ ------------    ------------- ------------- -------------
+     1 custoTotal                 10                             
+     2 atendido[1]                 1             1             = 
+     3 atendido[2]                 1             1             = 
+     4 atendido[3]                 1             1             = 
+     5 atendido[4]                 1             1             = 
+     6 eh_facilidade[1,1]
+                                   0                          -0 
+     7 eh_facilidade[1,2]
+                                   0                          -0 
+     8 eh_facilidade[1,3]
+                                   0                          -0 
+     9 eh_facilidade[1,4]
+                                   0                          -0 
+    10 eh_facilidade[2,1]
+                                   0                          -0 
+    11 eh_facilidade[2,2]
+                                   0                          -0 
+    12 eh_facilidade[2,3]
+                                   0                          -0 
+    13 eh_facilidade[2,4]
+                                   0                          -0 
+    14 eh_facilidade[3,1]
+                                   0                          -0 
+    15 eh_facilidade[3,2]
+                                   0                          -0 
+    16 eh_facilidade[3,3]
+                                   0                          -0 
+    17 eh_facilidade[3,4]
+                                   0                          -0 
+    18 eh_facilidade[4,1]
+                                   0                          -0 
+    19 eh_facilidade[4,2]
+                                   0                          -0 
+    20 eh_facilidade[4,3]
+                                   0                          -0 
+    21 eh_facilidade[4,4]
+                                   0                          -0 
+    22 facilidades_instaladas
+                                   1             1             = 
+
+   No. Column name       Activity     Lower bound   Upper bound
+------ ------------    ------------- ------------- -------------
+     1 x[1,1]       *              0             0             1 
+     2 x[1,2]       *              0             0             1 
+     3 x[1,3]       *              0             0             1 
+     4 x[1,4]       *              0             0             1 
+     5 x[2,1]       *              0             0             1 
+     6 x[2,2]       *              0             0             1 
+     7 x[2,3]       *              0             0             1 
+     8 x[2,4]       *              0             0             1 
+     9 x[3,1]       *              0             0             1 
+    10 x[3,2]       *              0             0             1 
+    11 x[3,3]       *              0             0             1 
+    12 x[3,4]       *              0             0             1 
+    13 x[4,1]       *              1             0             1 
+    14 x[4,2]       *              1             0             1 
+    15 x[4,3]       *              1             0             1 
+    16 x[4,4]       *              1             0             1 
+
+Integer feasibility conditions:
+
+KKT.PE: max.abs.err = 0.00e+00 on row 0
+        max.rel.err = 0.00e+00 on row 0
+        High quality
+
+KKT.PB: max.abs.err = 0.00e+00 on row 0
+        max.rel.err = 0.00e+00 on row 0
+        High quality
+
+End of output
