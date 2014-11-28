@@ -120,6 +120,8 @@ public class SAOptimization {
         gera_arquivo_saida(file10);
         */
 
+        
+        
         gerador_aleatorios = new Random();
         
         ArrayList<Integer> resultados = new ArrayList<Integer>();
@@ -130,8 +132,8 @@ public class SAOptimization {
             pmed = new ArrayList<Integer>();   
              
 	        /*Le matriz de entrada*/
-	        inicializa_matriz_entrada(infile2);
-	        gera_arquivo_saida(file2);
+	        inicializa_matriz_entrada(infile7);
+	        gera_arquivo_saida(file7);
 	        
 	        /*Simulated Annealing*/
 	                
@@ -142,9 +144,9 @@ public class SAOptimization {
 	        
 	        //int custo_anterior = solucao_inicial4();
 	        //perturba_solucao2(custo_anterior);
-	        int res = simulated_annealing(stop2, stop1, temperatura, resfriamento);
+	      int res = simulated_annealing(stop2, stop1, temperatura, resfriamento);
 	        
-	        resultados.add(res);
+	   resultados.add(res);
         }
         
         int total = 0;
@@ -890,8 +892,15 @@ public class SAOptimization {
              {
                  //Coloca diagonal = 0
                  if(j==i)
-                    matriz_entrada[i][j] = VALOR_INFINITO;
-                 else
+                 {
+                    if(TIPO_ENTRADA == 0){
+                        matriz_entrada[i][j] = 0;
+                    }
+                    else if(TIPO_ENTRADA == 1)
+                         matriz_entrada[i][j] = VALOR_INFINITO;
+                    
+                 }
+                    else
                     matriz_entrada[i][j] = VALOR_INFINITO;
              }         
          /*Enquanto não leu tudo do arquivo*/          
