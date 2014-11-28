@@ -93,73 +93,39 @@ public class SAOptimization {
     public static File infile8 = new File("pmed10.txt");
     public static File infile9 = new File("pmed20.txt");
     public static File infile10 = new File("pmed40.txt");
+    
+    public static File input;
 
 
     public static void main(String[] args) throws IOException
-    {        
-     /*   
-        inicializa_matriz_entrada(infile1);
-        gera_arquivo_saida(file1);
-        inicializa_matriz_entrada(infile2);
-        gera_arquivo_saida(file2);
-        inicializa_matriz_entrada(infile3);
-        gera_arquivo_saida(file3);
-        inicializa_matriz_entrada(infile4);
-        gera_arquivo_saida(file4);
-        inicializa_matriz_entrada(infile5);
-        gera_arquivo_saida(file5);
-        inicializa_matriz_entrada(infile6);
-        gera_arquivo_saida(file6);
-        inicializa_matriz_entrada(infile7);
-        gera_arquivo_saida(file7);
-        inicializa_matriz_entrada(infile8);
-        gera_arquivo_saida(file8);
-        inicializa_matriz_entrada(infile9);
-        gera_arquivo_saida(file9);
-        inicializa_matriz_entrada(infile10);
-        gera_arquivo_saida(file10);
-        */
+    {                       
+                        
+        gerador_aleatorios = new Random();                        
 
-        
-        
-        gerador_aleatorios = new Random();
-        
-        ArrayList<Integer> resultados = new ArrayList<Integer>();
-        
-        for(int o=0;o<5;o++)
-        {
             p = new ArrayList<Integer>();
-            pmed = new ArrayList<Integer>();   
-             
-	        /*Le matriz de entrada*/
-	        inicializa_matriz_entrada(infile7);
-	        gera_arquivo_saida(file7);
-	        
-	        /*Simulated Annealing*/
-	                
-	        stop1 = dimension*dimension;
-	        stop2 = 120;
-	        temperatura = 20.0;
-	        resfriamento = 0.9999; //Valor (0,1)
-	        
-	        //int custo_anterior = solucao_inicial4();
-	        //perturba_solucao2(custo_anterior);
-	      int res = simulated_annealing(stop2, stop1, temperatura, resfriamento);
-	        
-	   resultados.add(res);
-        }
+            pmed = new ArrayList<Integer>();                		        
+                         
+                input = new File(args[0]);
+                
+                System.out.println("FOI!!");
+                
+                inicializa_matriz_entrada(input);
+                gera_arquivo_saida(input);
+                
+                System.out.println("FOI!!");
+                
+	        stop2 = Integer.parseInt(args[1]);
+	        temperatura = Double.parseDouble(args[2]);
+	        resfriamento = Double.parseDouble(args[3]);; //Valor (0,1)
+
+                System.out.println("FOI!!");
+                
+	      int res = simulated_annealing(stop2, dimension*dimension, temperatura, resfriamento);
+	        	   
         
-        int total = 0;
+        System.out.println("Melhor custo = " + res);
         
-        for(int o=0;o<5;o++)
-        {
-        	total+=resultados.get(o);
-        	System.out.println("Resultado " + o + ": " + resultados.get(o));
-        }
         
-        float media = (float) (total/5.0);
-        
-        System.out.println("Media = " + media);
     }
 
     public static void gera_arquivo_saida(File file) throws IOException
