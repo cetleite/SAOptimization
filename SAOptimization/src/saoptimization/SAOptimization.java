@@ -104,7 +104,11 @@ public class SAOptimization {
 
             p = new ArrayList<Integer>();
             pmed = new ArrayList<Integer>();                		        
-                         
+              
+                /******************/
+                /*ENTRADA DE DADOS*/
+                /******************/
+            
                 input = new File(args[0]);
                 
                 System.out.println("FOI!!");
@@ -120,6 +124,9 @@ public class SAOptimization {
 
                 System.out.println("FOI!!");
                 
+                /********************************************/
+                /*EXECUÇÃO DA HEURÍSTICA SIMULATED ANNEALING*/
+                /********************************************/
 	      int res = simulated_annealing(stop2, dimension*dimension, temperatura, resfriamento);
 	        	   
         
